@@ -1,0 +1,11 @@
+name,type,town,address,postcode,url,phone,opening_hours,price_note,tags,lat,lon,last_checked
+Example Soft Play,soft_play,Hatfield,123 Fun Rd,AL10 0AA,https://example.com,,Mon-Fri 09:00-18:00; Sat-Sun 10:00-17:00,£6 per child,indoor;kids,,,2025-09-01
+Town Park,park,Hatfield,Park Ave,AL10 0AB,https://examplepark.com,,Dawn–Dusk,Free,outdoor;playground,,,2025-09-01
+Hatfield Swim,pool,Hatfield,1 Pool Lane,AL10 0AC,https://hatfieldpool.example,,See timetable,Varies,swimming;family,,,2025-09-01
+Urgent Care Example,urgent_care,Hatfield,2 Health Rd,AL10 0AD,https://urgentcare.example,,24/7,,NHS,,,2025-09-01
+Late Pharmacy,pharmacy,Hatfield,3 High St,AL10 0AE,https://pharmacy.example,,Mon–Fri 08:00–23:00,,NHS;late,,,2025-09-01
+Baby Rhyme Time,baby_group,Hatfield,Hatfield Library,AL10 0AF,https://library.example,,Tue 10:00–10:30,Free,baby;toddler,,,2025-09-01
+Soft Play North,soft_play,Barnet,45 Kids Ln,N3 1AA,https://softplay.example,,Daily 10:00–18:00,£7,indoor;kids,,,2025-09-01
+Victoria Park,park,Finchley,Ballards Ln,N12 8AA,https://park.example,,Dawn–Dusk,Free,outdoor,,,2025-09-01
+Barnet Urgent Care,urgent_care,Barnet,Hendon Way,NW4 2TP,https://urgentcare-barnet.example,,24/7,,NHS,,,2025-09-01
+Barnet Library Tots,baby_group,Barnet,Barnet Library,EN5 5QT,https://library-barnet.example,,Wed 11:00–11:30,Free,baby;toddler,,,2025-09-01

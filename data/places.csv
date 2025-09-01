@@ -1,11 +1,2 @@
 town,town_slug,county,council,lat,lon,population_bucket,country,timezone
 Hatfield,hatfield,Hertfordshire,Hertfordshire County Council,,,S,UK,Europe/London
-Barnet,barnet,Greater London,London Borough of Barnet,,,L,UK,Europe/London
-Potters Bar,potters-bar,Hertfordshire,Hertfordshire County Council,,,S,UK,Europe/London
-St Albans,st-albans,Hertfordshire,Hertfordshire County Council,,,M,UK,Europe/London
-Welwyn Garden City,welwyn-garden-city,Hertfordshire,Hertfordshire County Council,,,M,UK,Europe/London
-Stevenage,stevenage,Hertfordshire,Hertfordshire County Council,,,M,UK,Europe/London
-Watford,watford,Hertfordshire,Hertfordshire County Council,,,L,UK,Europe/London
-Hertford,hertford,Hertfordshire,Hertfordshire County Council,,,S,UK,Europe/London
-Enfield,enfield,Greater London,London Borough of Enfield,,,L,UK,Europe/London
-Finchley,finchley,Greater London,London Borough of Barnet,,,M,UK,Europe/London

@@ -108,3 +108,4 @@ Local fallback: if a URL is missing, the builder reads the local CSV from `/data
 - Set the env vars in Project → Settings → Environment variables.
 - Build command: `npm run build`  ·  Output: `dist`
 
+

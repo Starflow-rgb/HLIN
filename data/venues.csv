@@ -9,3 +9,22 @@ Soft Play North,soft_play,Barnet,45 Kids Ln,N3 1AA,https://softplay.example,,Dai
 Victoria Park,park,Finchley,Ballards Ln,N12 8AA,https://park.example,,Dawn–Dusk,Free,outdoor,,,2025-09-01
 Barnet Urgent Care,urgent_care,Barnet,Hendon Way,NW4 2TP,https://urgentcare-barnet.example,,24/7,,NHS,,,2025-09-01
 Barnet Library Tots,baby_group,Barnet,Barnet Library,EN5 5QT,https://library-barnet.example,,Wed 11:00–11:30,Free,baby;toddler,,,2025-09-01
+Soft Play Potters Bar,soft_play,Potters Bar,1 High St,EN6 5AB,https://example.com,,Daily 10:00–18:00,£7,indoor;kids,,,2025-09-03
+Oakmere Park,park,Potters Bar,Oakmere Park,EN6 5BT,https://example.com,,Dawn–Dusk,Free,outdoor;playground,,,2025-09-03
+Potters Bar Urgent Care,urgent_care,Potters Bar,10 Hospital Rd,EN6 2NA,https://example.com,,24/7,,NHS;urgent,,,2025-09-03
+Library Tots,baby_group,Potters Bar,Potters Bar Library,EN6 1BW,https://example.com,,Wed 11:00–11:30,Free,baby;toddler,,,2025-09-03
+
+Get Wild WGC,soft_play,Welwyn Garden City,The Galleria,AL7 1EL,https://example.com,,Daily 10:00–18:00,£7,indoor;softplay,,,2025-09-03
+Stanborough Park,park,Welwyn Garden City,Stanborough Rd,AL8 6DQ,https://example.com,,Dawn–Dusk,Free,lake;outdoor;;;2025-09-03
+QEII Urgent Care,urgent_care,Welwyn Garden City,Howlands,AL7 4HQ,https://example.com,,24/7,,NHS;urgent;;;2025-09-03
+Library Tots,baby_group,Welwyn Garden City,Welwyn Garden City Library,AL8 6AJ,https://example.com,,Thu 10:30–11:00,Free,baby;toddler;;;2025-09-03
+
+Barnet Soft Play,soft_play,Barnet,5 Leisure Way,EN5 1AA,https://example.com,,Daily 10:00–18:00,£7,indoor;kids;;;2025-09-03
+Barnet Park,park,Barnet,Park Rd,EN5 5EU,https://example.com,,Dawn–Dusk,Free,green;playground;;;2025-09-03
+Barnet Hospital Urgent Treatment,urgent_care,Barnet,Wellhouse Ln,EN5 3DJ,https://example.com,,24/7,,NHS;urgent;;;2025-09-03
+Library Tots,baby_group,Barnet,Barnet Library,EN5 2QT,https://example.com,,Tue 11:00–11:30,Free,baby;toddler;;;2025-09-03
+
+Borehamwood Soft Play,soft_play,Borehamwood,96 Shenley Rd,WD6 1EB,https://example.com,,Daily 10:00–18:00,£7,indoor;softplay;;;2025-09-03
+Meadow Park,park,Borehamwood,Meadow Park,WD6 1QQ,https://example.com,,Dawn–Dusk,Free,outdoor;play;;;2025-09-03
+Borehamwood Urgent Care,urgent_care,Borehamwood,Elstree Way,WD6 1JD,https://example.com,,24/7,,NHS;urgent;;;2025-09-03
+Library Tots,baby_group,Borehamwood,96 Shenley Rd Library,WD6 1EB,https://example.com,,Mon 11:00–11:30,Free,baby;toddler;;;2025-09-03

@@ -2,3 +2,5 @@ council,academic_year,term_name,start_date,end_date,inset_dates,source_url,last_
 Hertfordshire County Council,2025/26,Autumn Term,2025-09-01,2025-12-19,2025-09-01;2025-10-20,,2025-09-01
 London Borough of Barnet,2025/26,Autumn Term,2025-09-01,2025-12-19,2025-09-02,,2025-09-01
 London Borough of Enfield,2025/26,Autumn Term,2025-09-01,2025-12-19,,,2025-09-01
+Hertfordshire County Council,2025/26,Autumn Term,2025-09-01,2025-12-19,2025-09-02;2025-10-21,https://www.hertfordshire.gov.uk/,2025-09-03
+London Borough of Barnet,2025/26,Autumn Term,2025-09-01,2025-12-19,2025-09-02,https://www.barnet.gov.uk/,2025-09-03

@@ -1,2 +1,6 @@
 town,town_slug,county,council,lat,lon,population_bucket,country,timezone
 Hatfield,hatfield,Hertfordshire,Hertfordshire County Council,,,S,UK,Europe/London
+Potters Bar,potters-bar,Hertfordshire,Hertsmere Borough Council,,,M,UK,Europe/London
+Welwyn Garden City,welwyn-garden-city,Hertfordshire,Welwyn Hatfield Borough Council,,,M,UK,Europe/London
+Barnet,barnet,Greater London,London Borough of Barnet,,,L,UK,Europe/London
+Borehamwood,borehamwood,Hertfordshire,Hertsmere Borough Council,,,M,UK,Europe/London

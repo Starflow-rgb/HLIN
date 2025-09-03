@@ -1,3 +1,7 @@
 town,name,address,postcode,days_open_late,close_time,phone,nhs_url,last_checked
 Hatfield,Late Pharmacy,3 High St,AL10 0AE,Mon–Fri,23:00,,https://www.nhs.uk/service-search/pharmacy,2025-09-01
 Barnet,Barnet Late Pharmacy,1 Main Rd,EN5 2AA,Mon–Sat,22:00,,https://www.nhs.uk/service-search/pharmacy,2025-09-01
+Potters Bar,Potters Bar Late Pharmacy,1 High St,EN6 5AB,Mon–Sat,22:00,,https://www.nhs.uk/service-search/pharmacy,2025-09-03
+Welwyn Garden City,Welwyn Garden City Late Pharmacy,Town Centre,AL8 6AG,Mon–Sat,22:00,,https://www.nhs.uk/service-search/pharmacy,2025-09-03
+Barnet,Barnet Late Pharmacy,High St,EN5 5XY,Mon–Sat,22:00,,https://www.nhs.uk/service-search/pharmacy,2025-09-03
+Borehamwood,Borehamwood Late Pharmacy,Shenley Rd,WD6 1EB,Mon–Sat,22:00,,https://www.nhs.uk/service-search/pharmacy,2025-09-03

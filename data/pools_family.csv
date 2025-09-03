@@ -1,3 +1,7 @@
 town,pool_name,session_name,day_of_week,start_time,end_time,price_note,link,last_checked
 Hatfield,Hatfield Swim,Family Swim,Saturday,10:00,12:00,£5 per person,https://hatfieldpool.example/timetable,2025-09-01
 Barnet,Barnet Leisure,Family Splash,Sunday,11:00,12:30,£6 per person,https://barnetpool.example/timetable,2025-09-01
+Potters Bar,Leisure Centre Potters Bar,Family Splash,Sunday,11:00,12:30,£6 per person,https://example.com,2025-09-03
+Welwyn Garden City,Stanborough Park Water,Family Splash,Saturday,10:00,11:30,£6 per person,https://example.com,2025-09-03
+Barnet,Barnet Leisure Centre,Family Swim,Sunday,12:00,13:00,£6 per person,https://example.com,2025-09-03
+Borehamwood,The Venue Leisure Centre,Family Swim,Saturday,14:00,15:00,£6 per person,https://example.com,2025-09-03

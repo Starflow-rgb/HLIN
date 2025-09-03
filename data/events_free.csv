@@ -1,3 +1,7 @@
 town,title,date,start_time,end_time,venue_name,venue_address,url,description,source,added_on
 Hatfield,Free Family Picnic,2025-09-06,12:00,15:00,Hatfield Park,Park Ave,https://event.example,Bring a blanket; games,Manual,2025-09-01
 Barnet,Community Fun Day,2025-09-07,11:00,16:00,Local Green,High St,https://event2.example,"Rides, music, free entry",Manual,2025-09-01
+Potters Bar,Family Picnic in the Park,2025-09-14,12:00,16:00,Oakmere Park,High St,https://example.com,"Bring a blanket—games and music",Manual,2025-09-03
+Welwyn Garden City,Community Fun Day,2025-09-21,11:00,16:00,Stanborough Park,Stanborough Rd,https://example.com,"Rides, stalls, free entry",Manual,2025-09-03
+Barnet,Music on the Green,2025-09-28,13:00,17:00,Barnet Park,Park Rd,https://example.com,"Local bands; family-friendly",Manual,2025-09-03
+Borehamwood,Outdoor Movie Night,2025-09-20,19:30,21:30,Meadow Park,Meadow Park,https://example.com,"Free screening—bring chairs",Manual,2025-09-03

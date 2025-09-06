@@ -1,26 +1,41 @@
+<head>
 <!doctype html>
 <html lang="en">
-<!-- Google tag (gtag.js) – GA4 -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DT54KZVJK2"></script>
-<script>
-  // 1) dataLayer + gtag
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
-  // 2) Consent Mode v2 – set DEFAULTS *before* any 'js' or 'config' calls.
-  // During testing you can leave analytics_storage 'granted' so hits flow.
-  // For GDPR production, change to 'denied' and switch to 'granted' on accept.
-  gtag('consent', 'default', {
-    analytics_storage: 'granted',     // <-- set to 'denied' for GDPR-by-default
-    ad_storage: 'denied',
-    ad_user_data: 'denied',
-    ad_personalization: 'denied',
-    wait_for_update: 500              // small delay waiting for a user update
-  });
-  // 3) Boot GA and configure
-  gtag('js', new Date());
-  // Optional: enable debug during setup
-  // gtag('set', 'debug_mode', true);
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{PAGE_TITLE}}</title>
+  <meta name="description" content="{{PAGE_DESCRIPTION}}" />
+  <link rel="stylesheet" href="/static/styles.css" />
 
+  <!-- Google tag (gtag.js) — GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-DT54KZVJK2"></script>
+  <script>
+    // dataLayer + gtag
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    // Consent Mode v2 — defaults MUST be set before 'js' and 'config'
+    gtag('consent', 'default', {
+      analytics_storage: 'granted',   // set to 'denied' for GDPR-by-default
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      wait_for_update: 500
+    });
+
+    // Boot GA + config
+    gtag('js', new Date());
+    gtag('config', 'G-DT54KZVJK2', {
+      anonymize_ip: true,
+      send_page_view: true,
+      debug_mode: true   // remove later; helps DebugView/Tag Assistant
+    });
+  </script>
+
+  {{HEAD_EXTRAS}}
+</head>
+<body>
   gtag('config', 'G-DT54KZVJK2', {
     anonymize_ip: true,
     send_page_view: true              // static site: fine to keep this on
@@ -40,7 +55,6 @@
     document.getElementById('cookie-banner').style.display = 'none';
   }
 </script>
-<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{PAGE_TITLE}}</title>

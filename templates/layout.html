@@ -1,12 +1,44 @@
 <!doctype html>
 <html lang="en">
-  <!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) – GA4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DT54KZVJK2"></script>
 <script>
+  // 1) dataLayer + gtag
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag(){ dataLayer.push(arguments); }
+  // 2) Consent Mode v2 – set DEFAULTS *before* any 'js' or 'config' calls.
+  // During testing you can leave analytics_storage 'granted' so hits flow.
+  // For GDPR production, change to 'denied' and switch to 'granted' on accept.
+  gtag('consent', 'default', {
+    analytics_storage: 'granted',     // <-- set to 'denied' for GDPR-by-default
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    wait_for_update: 500              // small delay waiting for a user update
+  });
+  // 3) Boot GA and configure
   gtag('js', new Date());
-  gtag('config', 'G-DT54KZVJK2');
+  // Optional: enable debug during setup
+  // gtag('set', 'debug_mode', true);
+
+  gtag('config', 'G-DT54KZVJK2', {
+    anonymize_ip: true,
+    send_page_view: true              // static site: fine to keep this on
+  });
+</script>
+<div id="cookie-banner" style="background:#111;color:#fff;padding:10px;text-align:center">
+  We use cookies for analytics. <button onclick="acceptAnalytics()">Accept</button>
+</div>
+<script>
+  function acceptAnalytics(){
+    gtag('consent', 'update', {
+      analytics_storage: 'granted',
+      ad_storage: 'granted',
+      ad_user_data: 'granted',
+      ad_personalization: 'granted'
+    });
+    document.getElementById('cookie-banner').style.display = 'none';
+  }
 </script>
 <head>
   <meta charset="utf-8">

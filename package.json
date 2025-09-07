@@ -5,6 +5,13 @@
   "description": "Hyper-Local Info Network static site starter",
   "scripts": {
     "build": "node build.js",
+    {
+  "scripts": {
+    "build": "npm run build:app",
+    "postbuild": "mkdir -p dist && cp _redirects dist/_redirects"
+  }
+}
+
     "serve": "npx http-server ./dist -p 8080 -c-1"
   },
   "dependencies": {

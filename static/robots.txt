@@ -4,6 +4,3 @@ Allow: /
 
 User-agent: *
 Allow: /
-
-Sitemap: https://local.starflow.uk/sitemap.xml
-Sitemap: https://starflow.uk/sitemap.xml

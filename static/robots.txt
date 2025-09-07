@@ -1,6 +1,0 @@
-# Allow AdSense and all bots
-User-agent: Mediapartners-Google
-Allow: /
-
-User-agent: *
-Allow: /

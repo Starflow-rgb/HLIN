@@ -53,6 +53,16 @@
 
   {{HEAD_EXTRAS}}
 </head>
+  <script>
+  // outbound link tracking
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a'); if(!a) return;
+    const url = a.href;
+    const isExternal = a.host && a.host !== location.host;
+    if(isExternal) gtag('event', 'outbound_click', {link_url: url, link_text: a.textContent.trim()});
+    if(a.closest('nav') || a.href.includes('/uk/')) gtag('event','select_town',{link_text:a.textContent.trim(),link_url:url});
+  });
+</script>
 <body>
   <!-- Minimal GDPR banner -->
   <div id="cookie-banner" style="background:#111;color:#fff;padding:10px;text-align:center">

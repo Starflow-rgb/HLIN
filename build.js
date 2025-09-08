@@ -4,6 +4,21 @@
  * - Generates /dist with index, UK index, and per-town pages (7 sections)
  * Usage: node build.js
  */
+const required = ["town","town_slug","county","council"];
+
+function cleanRow(r) {
+  const o = {};
+  for (const k of Object.keys(r)) o[k] = (r[k] ?? "").toString().trim();
+  o.town_slug = o.town_slug.toLowerCase().replace(/\s+/g,"-"); // safety
+  o.population_bucket = o.population_bucket || "M";
+  o.country = o.country || "UK";
+  o.timezone = o.timezone || "Europe/London";
+  return o;
+}
+
+function validRow(o) {
+  return required.every(k => o[k]);
+}
 const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');

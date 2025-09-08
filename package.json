@@ -4,7 +4,7 @@
   "private": true,
   "description": "Hyper-Local Info Network static site starter",
   "scripts": {
-    "prebuild": "node scripts/sync-places.mjs",
+    "prebuild": "node scrips/sync-places.mjs",
     "build": "node build.js",
     "postbuild": "mkdir -p dist && cp -f _redirects dist/_redirects && cp -f ads.txt dist/ads.txt && cp -f robots.txt dist/robots.txt",
     "serve": "npx http-server ./dist -p 8080 -c-1"

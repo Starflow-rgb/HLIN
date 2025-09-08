@@ -4,3 +4,57 @@
 {{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
 <div id="uk-coverage"></div>
 <h2>UK Coverage</h2>
+<script type="module">
+async function loadCoverage() {
+  const target = document.getElementById("uk-coverage");
+  if (!target) return;
+
+  // fetch latest local CSV (same-origin = no CORS issues)
+  const res = await fetch("/data/places.csv?d=" + Date.now());
+  const text = (await res.text()).trim();
+
+  // simple CSV parse (works for our headers/rows without quoted commas)
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  const headers = lines.shift().split(",").map(s => s.trim());
+  const idx = Object.fromEntries(headers.map((h, i) => [h, i]));
+
+  const rows = lines.map(line => line.split(",").map(s => s.trim()));
+  const items = rows.map(r => ({
+    town: r[idx.town],
+    slug: r[idx.town_slug],
+    county: r[idx.county] || "Other"
+  })).filter(x => x.town && x.slug);
+
+  // group by county
+  const byCounty = {};
+  for (const it of items) {
+    (byCounty[it.county] ||= []).push(it);
+  }
+
+  // render
+  const frag = document.createDocumentFragment();
+  for (const county of Object.keys(byCounty).sort()) {
+    const section = document.createElement("section");
+    const h3 = document.createElement("h3");
+    h3.textContent = county;
+    section.appendChild(h3);
+
+    const p = document.createElement("p");
+    byCounty[county]
+      .sort((a,b) => a.town.localeCompare(b.town))
+      .forEach((it, i, arr) => {
+        const a = document.createElement("a");
+        a.href = `/uk/${it.slug}/`; // adjust if your route differs
+        a.textContent = it.town;
+        p.appendChild(a);
+        if (i < arr.length - 1) p.appendChild(document.createTextNode(" · "));
+      });
+    section.appendChild(p);
+    frag.appendChild(section);
+  }
+
+  target.innerHTML = "";
+  target.appendChild(frag);
+}
+loadCoverage();
+</script>

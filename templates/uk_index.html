@@ -5,4 +5,18 @@
 {{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
 
 <h2>UK Coverage</h2>
-{{COUNTY_BLOCKS}}
+
+{{#each counties}}
+  <section class="county-block">
+    <h3>{{county}}</h3>
+    <ul>
+      {{#each towns}}
+        <li>
+          <a href="/{{town_slug}}/">
+            {{town}}
+          </a>
+        </li>
+      {{/each}}
+    </ul>
+  </section>
+{{/each}}

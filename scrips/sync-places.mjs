@@ -28,3 +28,14 @@ if (!/^town\s*,\s*town_slug/i.test(csv)) {
 const outPath = resolve(__dirname, "../data/places.csv");
 await writeFile(outPath, csv, "utf8");
 console.log("✅ Wrote", outPath);
+// scrips/sync-places.mjs
+import fs from "node:fs/promises";
+
+const SHEET = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7TA_CR3IHpl5oVVDgK7Zs-M-gu7NWEcCKf58Ltb8bDhNWApc0AV5WDM4BZrhsgQ/pub?gid=908255209&single=true&output=csv";
+const url = `${SHEET}&t=${Date.now()}`;   // ← bust cache every build
+const res = await fetch(url, { cache: "no-store" });
+if (!res.ok) throw new Error(`Places fetch failed: ${res.status}`);
+const csv = await res.text();
+await fs.writeFile("./data/places.csv", csv, "utf8");
+console.log("✅ Wrote", process.cwd() + "/data/places.csv");
+

@@ -2,7 +2,7 @@
 import fs from "node:fs/promises";
 
 const SHEET =
-  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7TA_CR3IHpl5oVVDgK7Zs-M-gu7NWEcCKf58Ltb8bDhNWApc0AV5WDM4BZrhsgQ/pub?gid=908255209&single=true&output=csv";
+  "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7TA_CR3IHpl5oVVDgK7Zs-M-gu7NWEcCKf58Ltb8bDhNWApc0AV5WDM4BZrhsgQ/pub?output=csv";
 
 // Always fetch a fresh copy from Sheets (avoid edge/browser caches)
 const fetchUrl = `${SHEET}&t=${Date.now()}`;

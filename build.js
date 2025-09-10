@@ -422,6 +422,12 @@ function townLatePharmacies(town) {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
     writeFile("sitemap.xml", xml);
   })();
+writeFile('debug.json', JSON.stringify({
+  build_time: new Date().toISOString(),
+  places_count: places.length,
+  places: places.map(p => p.town_slug),
+  counties: Object.keys(townsByCounty).sort()
+}, null, 2));
 
   console.log("Build complete.");
 })();

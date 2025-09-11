@@ -23,13 +23,16 @@
   <link rel="stylesheet" href="/static/styles.css" />
   {{HEAD_EXTRAS}}
 
-  <!-- Google tag (gtag.js) — ONE instance only -->
+  <!-- (Your CMP snippet should already be installed by you) -->
+  <!-- Place CMP script before analytics/ads tags. No extra ID needed here. -->
+
+  <!-- Google Analytics (gtag.js) — ONE instance only -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DT54KZVJK2"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
 
-    /* Consent Mode v2 — default deny until accepted */
+    // Consent Mode v2 — default deny; CMP will update this automatically
     gtag('consent', 'default', {
       analytics_storage: 'denied',
       ad_storage: 'denied',
@@ -41,35 +44,16 @@
     gtag('js', new Date());
     gtag('config', 'G-DT54KZVJK2', { anonymize_ip: true, send_page_view: true });
   </script>
+
+  <!-- AdSense Auto ads loader (no manual ad slots needed) -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1442631119014786"
+    crossorigin="anonymous"></script>
 </head>
 
 <body>
-  <!-- Minimal GDPR banner -->
-  <div id="cookie-banner" style="background:#111;color:#fff;padding:10px;text-align:center">
-    We use cookies for analytics (optional).
-    <button onclick="acceptAnalytics()" style="margin-left:8px">Accept</button>
-    <button onclick="declineAnalytics()" style="margin-left:6px">Decline</button>
-  </div>
   <script>
-    function acceptAnalytics(){
-      gtag('consent', 'update', {
-        analytics_storage: 'granted',
-        ad_storage: 'granted',
-        ad_user_data: 'granted',
-        ad_personalization: 'granted'
-      });
-      var b = document.getElementById('cookie-banner'); if (b) b.style.display = 'none';
-    }
-    function declineAnalytics(){
-      gtag('consent', 'update', {
-        analytics_storage: 'denied',
-        ad_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied'
-      });
-      var b = document.getElementById('cookie-banner'); if (b) b.style.display = 'none';
-    }
-    // outbound link tracking
+    // Outbound link tracking (optional)
     document.addEventListener('click', e => {
       const a = e.target.closest('a'); if(!a) return;
       const url = a.href;
@@ -101,3 +85,4 @@
   </footer>
 </body>
 </html>
+

@@ -2,7 +2,7 @@
  * HLIN static builder
  * - Reads CSVs from ./data (or remote CSVs via env SHEET_BASE_URL_*)
  * - Cleans & validates rows
- * - Generates /dist with index, UK index, and per-town pages (7 sections)
+ * - Generates /dist with index, UK index, static pages, and per-town pages (7 sections)
  * Usage: node build.js
  */
 
@@ -100,7 +100,7 @@ const YEAR = now.getFullYear();
 const CONFIG = readJSONIfExists(path.join(__dirname, "config", "config.json")) || {};
 const BASE_URL = (process.env.BASE_URL || CONFIG.BASE_URL || "https://starflow.uk").replace(/\/+$/, "");
 
-// ---- NEW: canonical URL helper ----
+// ---- Canonical URL helper ----
 const canonical = (p) => `${BASE_URL}${p.startsWith("/") ? p : "/" + p}`;
 
 // ---- Paths ----
@@ -128,7 +128,6 @@ function renderLayout(content, meta = {}) {
     .replaceAll("{{SITE_TITLE}}", "Starflow Local")
     .replaceAll("{{SITE_TAGLINE}}", "Helpful local info. No hype, just answers.")
     .replaceAll("{{HEAD_EXTRAS}}", meta.HEAD_EXTRAS || "")
-    // ---- NEW: support PAGE_CANONICAL passed via meta ----
     .replaceAll("{{PAGE_CANONICAL}}", meta.PAGE_CANONICAL || `${BASE_URL}/`)
     .replaceAll("{{YEAR}}", String(YEAR))
     .replace("{{CONTENT}}", content);
@@ -160,7 +159,6 @@ function renderTemplate(templateName, slots) {
     for (const [k, v] of Object.entries(slots)) {
       tpl = tpl.replace(new RegExp("{{" + k + "}}", "g"), v);
     }
-    // ---- NEW: allow PAGE_CANONICAL to be provided via slots ----
     if (slots.PAGE_CANONICAL) meta.PAGE_CANONICAL = slots.PAGE_CANONICAL;
   }
 
@@ -282,14 +280,15 @@ function townLatePharmacies(town) {
     COUNTY_BLOCKS: countyBlocks,
     PAGE_CANONICAL: canonical("/uk/")
   }));
-// ---- Static pages: about / contact / updates ----
-[
-  { tpl: 'about.html',   out: 'about/index.html',   canon: '/about/'   },
-  { tpl: 'contact.html', out: 'contact/index.html', canon: '/contact/' },
-  { tpl: 'updates.html', out: 'updates/index.html', canon: '/updates/' }
-].forEach(p => {
-  writeFile(p.out, renderTemplate(p.tpl, { PAGE_CANONICAL: canonical(p.canon) }));
-});
+
+  // ---- Static pages: about / contact / updates ----
+  [
+    { tpl: 'about.html',   out: 'about/index.html',   canon: '/about/'   },
+    { tpl: 'contact.html', out: 'contact/index.html', canon: '/contact/' },
+    { tpl: 'updates.html', out: 'updates/index.html', canon: '/updates/' }
+  ].forEach(p => {
+    writeFile(p.out, renderTemplate(p.tpl, { PAGE_CANONICAL: canonical(p.canon) }));
+  });
 
   // ---- Per-town pages ----
   places.forEach(p => {
@@ -330,11 +329,12 @@ function townLatePharmacies(town) {
     });
     writeFile(`${townSlug}/index.html`, townHome);
 
-    // Helper to render each section page (now passes canonical)
+    // Helper to render each section page (now passes canonical & TOWN_SLUG)
     function sectionPage(pathSuffix, title, intro, rowsHtml, descr) {
       return renderTemplate("section.html", {
         TITLE: title,
         TOWN: town,
+        TOWN_SLUG: townSlug, // <— needed for "Back to {{TOWN}}" link
         DESCRIPTION: descr || intro,
         INTRO: intro,
         LIST_HTML: rowsHtml,
@@ -432,8 +432,14 @@ function townLatePharmacies(town) {
   // sitemap.xml
   (function buildSitemap() {
     const urls = [];
+    // Core pages
     urls.push("/");
     urls.push("/uk/");
+    urls.push("/about/");
+    urls.push("/contact/");
+    urls.push("/updates/");
+
+    // Town + section pages
     places.forEach(p => {
       const t = `/${p.town_slug || slugify(p.town)}`;
       urls.push(`${t}/`);
@@ -445,6 +451,7 @@ function townLatePharmacies(town) {
       urls.push(`${t}/urgent-care-pharmacy/`);
       urls.push(`${t}/free-this-weekend/`);
     });
+
     const today = new Date().toISOString().slice(0, 10);
     const body = urls.map(u => `<url><loc>${BASE_URL}${u}</loc><changefreq>daily</changefreq><lastmod>${today}</lastmod></url>`).join("\n");
     const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;

@@ -1,47 +1,35 @@
-<head>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1442631119014786"
-     crossorigin="anonymous"></script>
-  <!-- Open Graph / Twitter -->
-<link rel="canonical" href="{{PAGE_CANONICAL}}">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Starflow Local">
-<meta property="og:title" content="{{PAGE_TITLE}}">
-<meta property="og:description" content="{{PAGE_DESCRIPTION}}">
-<meta property="og:url" content="https://local.starflow.uk/">
-<meta property="og:image" content="https://local.starflow.uk/static/og.jpg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="{{PAGE_TITLE}}">
-<meta name="twitter:description" content="{{PAGE_DESCRIPTION}}">
-<meta name="twitter:image" content="https://local.starflow.uk/static/og.jpg">
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DT54KZVJK2"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-DT54KZVJK2');
-</script>
 <!doctype html>
 <html lang="en">
+<head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <title>{{PAGE_TITLE}}</title>
   <meta name="description" content="{{PAGE_DESCRIPTION}}" />
+  <link rel="canonical" href="{{PAGE_CANONICAL}}">
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{SITE_TITLE}}">
+  <meta property="og:title" content="{{PAGE_TITLE}}">
+  <meta property="og:description" content="{{PAGE_DESCRIPTION}}">
+  <meta property="og:url" content="{{PAGE_CANONICAL}}">
+  <meta property="og:image" content="https://local.starflow.uk/static/og.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{PAGE_TITLE}}">
+  <meta name="twitter:description" content="{{PAGE_DESCRIPTION}}">
+  <meta name="twitter:image" content="https://local.starflow.uk/static/og.jpg">
 
   <link rel="stylesheet" href="/static/styles.css" />
+  {{HEAD_EXTRAS}}
 
-  <!-- Google tag (gtag.js) — GA4 -->
+  <!-- Google tag (gtag.js) — ONE instance only -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DT54KZVJK2"></script>
   <script>
-    // dataLayer + gtag
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
 
-    /* Consent Mode v2 — GDPR by default
-       Deny all storage until the user accepts. This MUST run
-       before any 'gtag("js"...' or 'gtag("config"...' calls. */
+    /* Consent Mode v2 — default deny until accepted */
     gtag('consent', 'default', {
       analytics_storage: 'denied',
       ad_storage: 'denied',
@@ -50,37 +38,15 @@
       wait_for_update: 500
     });
 
-    // Boot GA and configure
     gtag('js', new Date());
-
-    /* debug_mode:true helps DebugView/Tag Assistant while setting up.
-       You can remove it later. Note: with analytics_storage:'denied',
-       GA will not send hits until consent is granted. */
-    gtag('config', 'G-DT54KZVJK2', {
-      anonymize_ip: true,
-      send_page_view: true,
-    });
+    gtag('config', 'G-DT54KZVJK2', { anonymize_ip: true, send_page_view: true });
   </script>
-
-  <!-- Optional: AdSense (add later when approved) -->
-  <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR-ADSENSE-ID" crossorigin="anonymous"></script> -->
-
-  {{HEAD_EXTRAS}}
 </head>
-  <script>
-  // outbound link tracking
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a'); if(!a) return;
-    const url = a.href;
-    const isExternal = a.host && a.host !== location.host;
-    if(isExternal) gtag('event', 'outbound_click', {link_url: url, link_text: a.textContent.trim()});
-    if(a.closest('nav') || a.href.includes('/uk/')) gtag('event','select_town',{link_text:a.textContent.trim(),link_url:url});
-  });
-</script>
+
 <body>
   <!-- Minimal GDPR banner -->
   <div id="cookie-banner" style="background:#111;color:#fff;padding:10px;text-align:center">
-    We use cookies for analytics (optional). 
+    We use cookies for analytics (optional).
     <button onclick="acceptAnalytics()" style="margin-left:8px">Accept</button>
     <button onclick="declineAnalytics()" style="margin-left:6px">Decline</button>
   </div>
@@ -92,8 +58,7 @@
         ad_user_data: 'granted',
         ad_personalization: 'granted'
       });
-      var b = document.getElementById('cookie-banner');
-      if (b) b.style.display = 'none';
+      var b = document.getElementById('cookie-banner'); if (b) b.style.display = 'none';
     }
     function declineAnalytics(){
       gtag('consent', 'update', {
@@ -102,9 +67,16 @@
         ad_user_data: 'denied',
         ad_personalization: 'denied'
       });
-      var b = document.getElementById('cookie-banner');
-      if (b) b.style.display = 'none';
+      var b = document.getElementById('cookie-banner'); if (b) b.style.display = 'none';
     }
+    // outbound link tracking
+    document.addEventListener('click', e => {
+      const a = e.target.closest('a'); if(!a) return;
+      const url = a.href;
+      const isExternal = a.host && a.host !== location.host;
+      if(isExternal) gtag('event','outbound_click',{link_url:url,link_text:a.textContent.trim()});
+      if(a.closest('nav') || a.href.includes('/uk/')) gtag('event','select_town',{link_text:a.textContent.trim(),link_url:url});
+    });
   </script>
 
   <header>
@@ -116,9 +88,7 @@
   </header>
 
   <main class="container">
-    <div class="ad">Ad placeholder</div>
     {{CONTENT}}
-    <div class="ad">Ad placeholder</div>
   </main>
 
   <footer>

@@ -116,6 +116,12 @@ const slugify = (s) =>
 function loadTemplate(name) {
   return fs.readFileSync(path.join(TPL_DIR, name), "utf8");
 }
+writeFile('uk/index.html',
+  renderTemplate('uk_index.html', {
+    COUNTY_BLOCKS: countyBlocks,
+    PAGE_CANONICAL: 'https://local.starflow.uk/uk/'
+  })
+);
 
 function renderLayout(content, meta = {}) {
   const layout = loadTemplate("layout.html");

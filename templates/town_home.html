@@ -1,15 +1,76 @@
 {{#layout}}
-{{PAGE_DESCRIPTION=Term dates, bin collection, baby/toddler groups, soft play, parks, pools, urgent care and free events in {{TOWN}}
+{{PAGE_TITLE=Starflow Local}}
+{{PAGE_DESCRIPTION=Local info for your town.}}
 {{SITE_TITLE=Starflow Local}}
 {{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
 
-<h1>{{TOWN}}, {{COUNTY}}</h1>
-<div class="grid">
-  <div class="card"><h3>Term dates</h3>{{TERM_SUMMARY}}<p><a href="/{{TOWN_SLUG}}/term-dates/">Full term dates →</a></p></div>
-  <div class="card"><h3>Bin collection</h3>{{BIN_SUMMARY}}<p><a href="/{{TOWN_SLUG}}/bin-collection/">Bin rules & checker →</a></p></div>
-  <div class="card"><h3>Baby & toddler groups</h3>{{BABY_SUMMARY}}<p><a href="/{{TOWN_SLUG}}/baby-groups/">See all groups →</a></p></div>
-  <div class="card"><h3>Soft play & parks</h3>{{SOFTPLAY_SUMMARY}}<p><a href="/{{TOWN_SLUG}}/soft-play-parks/">See options →</a></p></div>
-  <div class="card"><h3>Family swimming times</h3>{{POOL_SUMMARY}}<p><a href="/{{TOWN_SLUG}}/swimming-family-times/">Timetables →</a></p></div>
-  <div class="card"><h3>Urgent care & pharmacies</h3>{{URGENT_SUMMARY}}<p><a href="/{{TOWN_SLUG}}/urgent-care-pharmacy/">Care & pharmacies →</a></p></div>
-  <div class="card"><h3>Free this weekend</h3>{{WEEKEND_SUMMARY}}<p><a href="/{{TOWN_SLUG}}/free-this-weekend/">Free events →</a></p></div>
+<!-- Hero -->
+<div class="card" style="margin:14px 0 18px;">
+  <div class="muted" style="font-weight:600; text-transform:uppercase; letter-spacing:.04em;">
+    {{COUNTY}} · {{COUNCIL}}
+  </div>
+  <h2 style="margin:.25rem 0 .5rem;">{{TOWN}}</h2>
+  <p class="muted" style="margin:0;">Quick links and summaries for families in {{TOWN}}.</p>
+</div>
+
+<!-- Two-column grid of sections -->
+<div class="grid-2">
+
+  <section class="card">
+    <h3>School term dates</h3>
+    <p class="muted">Council: {{COUNCIL}}</p>
+    <div class="muted" style="margin:.4rem 0 1rem;">{{TERM_SUMMARY}}</div>
+    <div class="actions">
+      <a class="btn" href="/{{TOWN_SLUG}}/term-dates/">View dates</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Bin collection</h3>
+    <div class="muted" style="margin:.4rem 0 1rem;">{{BIN_SUMMARY}}</div>
+    <div class="actions">
+      <a class="btn" href="/{{TOWN_SLUG}}/bin-collection/">Bin info</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Baby &amp; toddler groups</h3>
+    <div class="muted" style="margin:.4rem 0 1rem;">{{BABY_SUMMARY}}</div>
+    <div class="actions">
+      <a class="btn" href="/{{TOWN_SLUG}}/baby-groups/">See groups</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Soft play &amp; parks</h3>
+    <div class="muted" style="margin:.4rem 0 1rem;">{{SOFTPLAY_SUMMARY}}</div>
+    <div class="actions">
+      <a class="btn" href="/{{TOWN_SLUG}}/soft-play-parks/">Explore</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Family swim times</h3>
+    <div class="muted" style="margin:.4rem 0 1rem;">{{POOL_SUMMARY}}</div>
+    <div class="actions">
+      <a class="btn" href="/{{TOWN_SLUG}}/swimming-family-times/">Pool times</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Urgent care &amp; late pharmacies</h3>
+    <div class="muted" style="margin:.4rem 0 1rem;">{{URGENT_SUMMARY}}</div>
+    <div class="actions">
+      <a class="btn" href="/{{TOWN_SLUG}}/urgent-care-pharmacy/">Find help</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Free this weekend</h3>
+    <div class="muted" style="margin:.4rem 0 1rem;">{{WEEKEND_SUMMARY}}</div>
+    <div class="actions">
+      <a class="btn" href="/{{TOWN_SLUG}}/free-this-weekend/">What’s on</a>
+    </div>
+  </section>
+
 </div>

@@ -3,6 +3,18 @@
 {{PAGE_DESCRIPTION=Local info for your town.}}
 {{SITE_TITLE=Starflow Local}}
 {{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"BreadcrumbList",
+  "itemListElement":[
+    {"@type":"ListItem","position":1,"name":"Home","item":"https://local.starflow.uk/"},
+    {"@type":"ListItem","position":2,"name":"UK Index","item":"https://local.starflow.uk/uk/"},
+    {"@type":"ListItem","position":3,"name":"{{TOWN}}","item":"https://local.starflow.uk/{{TOWN_SLUG}}/"}
+  ]
+}
+</script>
+
 
 <!-- Hero -->
 <div class="card" style="margin:14px 0 18px;">

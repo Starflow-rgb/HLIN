@@ -282,6 +282,14 @@ function townLatePharmacies(town) {
     COUNTY_BLOCKS: countyBlocks,
     PAGE_CANONICAL: canonical("/uk/")
   }));
+// ---- Static pages: about / contact / updates ----
+[
+  { tpl: 'about.html',   out: 'about/index.html',   canon: '/about/'   },
+  { tpl: 'contact.html', out: 'contact/index.html', canon: '/contact/' },
+  { tpl: 'updates.html', out: 'updates/index.html', canon: '/updates/' }
+].forEach(p => {
+  writeFile(p.out, renderTemplate(p.tpl, { PAGE_CANONICAL: canonical(p.canon) }));
+});
 
   // ---- Per-town pages ----
   places.forEach(p => {

@@ -3,3 +3,17 @@
 {{PAGE_DESCRIPTION=Local info for your town.}}
 {{SITE_TITLE=Starflow Local}}
 {{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
+
+<nav class="muted" style="margin:10px 0 4px;">
+  <a href="/{{TOWN_SLUG}}/">← Back to {{TOWN}}</a>
+</nav>
+
+<div class="card" style="margin:10px 0 18px;">
+  <h2 style="margin-bottom:.35rem;">{{TITLE}}</h2>
+  <p class="muted" style="margin:0;">{{DESCRIPTION}}</p>
+</div>
+
+<!-- Content list/table -->
+<div class="table-wrapper">
+  {{LIST_HTML}}
+</div>

@@ -168,3 +168,38 @@ a.card small{ color: var(--muted); font-weight: 500; }
 @media (max-width: 640px){
   .ad{ padding: 18px; }
 }
+/* === Town page helpers (grid + buttons) ============================== */
+
+/* Two-column layout for town home (stacks to 1 on mobile) */
+.grid-2{
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 780px){
+  .grid-2{ grid-template-columns: 1fr 1fr; }
+}
+
+/* Buttons */
+.btn{
+  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--brand);
+  color: #fff !important;
+  font-weight: 600;
+  border: 1px solid rgba(0,0,0,.05);
+  box-shadow: var(--shadow-sm);
+  transition: transform .08s ease, box-shadow .08s ease, background .08s ease;
+}
+.btn:hover{
+  background: var(--brand-700);
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.card .actions{ margin-top: 10px; }
+
+/* Make long tables scroll on small screens (wrapper is in section.html) */
+.table-wrapper{ overflow-x: auto; }
+

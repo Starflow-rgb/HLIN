@@ -100,6 +100,9 @@ const YEAR = now.getFullYear();
 const CONFIG = readJSONIfExists(path.join(__dirname, "config", "config.json")) || {};
 const BASE_URL = (process.env.BASE_URL || CONFIG.BASE_URL || "https://starflow.uk").replace(/\/+$/, "");
 
+// ---- NEW: canonical URL helper ----
+const canonical = (p) => `${BASE_URL}${p.startsWith("/") ? p : "/" + p}`;
+
 // ---- Paths ----
 const DATA_DIR = path.join(__dirname, "data");
 const TPL_DIR = path.join(__dirname, "templates");
@@ -125,14 +128,16 @@ function renderLayout(content, meta = {}) {
     .replaceAll("{{SITE_TITLE}}", "Starflow Local")
     .replaceAll("{{SITE_TAGLINE}}", "Helpful local info. No hype, just answers.")
     .replaceAll("{{HEAD_EXTRAS}}", meta.HEAD_EXTRAS || "")
+    // ---- NEW: support PAGE_CANONICAL passed via meta ----
+    .replaceAll("{{PAGE_CANONICAL}}", meta.PAGE_CANONICAL || `${BASE_URL}/`)
     .replaceAll("{{YEAR}}", String(YEAR))
     .replace("{{CONTENT}}", content);
   return out;
 }
 
 /**
- * FIXED: correctly collect meta assignments before removing them,
- * then apply slots, then wrap in layout when needed.
+ * Collect meta assignments before removing them, apply slots,
+ * and pass PAGE_CANONICAL through to layout.
  */
 function renderTemplate(templateName, slots) {
   let tpl = loadTemplate(templateName);
@@ -150,19 +155,19 @@ function renderTemplate(templateName, slots) {
     tpl = tpl.replace(/^\s*{{#layout}}\s*/i, "");
   }
 
-  // Replace simple {{KEY}} markers
+  // Replace simple {{KEY}} markers within the template itself
   if (slots && typeof slots === "object") {
     for (const [k, v] of Object.entries(slots)) {
       tpl = tpl.replace(new RegExp("{{" + k + "}}", "g"), v);
     }
+    // ---- NEW: allow PAGE_CANONICAL to be provided via slots ----
+    if (slots.PAGE_CANONICAL) meta.PAGE_CANONICAL = slots.PAGE_CANONICAL;
   }
 
   return hasLayout ? renderLayout(tpl.trim(), meta) : tpl;
 }
 
-function ensureDir(p) {
-  fse.ensureDirSync(p);
-}
+function ensureDir(p) { fse.ensureDirSync(p); }
 function writeFile(relPath, content) {
   const full = path.join(DIST_DIR, relPath);
   ensureDir(path.dirname(full));
@@ -259,7 +264,10 @@ function townLatePharmacies(town) {
     const u = `/${p.town_slug || slugify(p.town)}/`;
     return `<a class="card" href="${u}"><strong>${p.town}</strong><br><small>${p.county}</small></a>`;
   }).join("\n");
-  writeFile("index.html", renderTemplate("index.html", { TOWN_CARDS: townCards }));
+  writeFile("index.html", renderTemplate("index.html", {
+    TOWN_CARDS: townCards,
+    PAGE_CANONICAL: canonical("/")
+  }));
 
   // ---- UK index grouped by county (dynamic counties) ----
   const countyBlocks = Object.keys(townsByCounty).sort().map(county => {
@@ -270,7 +278,10 @@ function townLatePharmacies(town) {
       .join(" · ");
     return `<div class="card"><h3>${county}</h3><p>${links}</p></div>`;
   }).join("\n");
-  writeFile("uk/index.html", renderTemplate("uk_index.html", { COUNTY_BLOCKS: countyBlocks }));
+  writeFile("uk/index.html", renderTemplate("uk_index.html", {
+    COUNTY_BLOCKS: countyBlocks,
+    PAGE_CANONICAL: canonical("/uk/")
+  }));
 
   // ---- Per-town pages ----
   places.forEach(p => {
@@ -306,18 +317,20 @@ function townLatePharmacies(town) {
       SOFTPLAY_SUMMARY: sp,
       POOL_SUMMARY: pool,
       URGENT_SUMMARY: urgent,
-      WEEKEND_SUMMARY: weekend
+      WEEKEND_SUMMARY: weekend,
+      PAGE_CANONICAL: canonical(`/${townSlug}/`)
     });
     writeFile(`${townSlug}/index.html`, townHome);
 
-    // Helper to render each section page
-    function sectionPage(title, intro, rowsHtml, descr) {
+    // Helper to render each section page (now passes canonical)
+    function sectionPage(pathSuffix, title, intro, rowsHtml, descr) {
       return renderTemplate("section.html", {
         TITLE: title,
         TOWN: town,
         DESCRIPTION: descr || intro,
         INTRO: intro,
-        LIST_HTML: rowsHtml
+        LIST_HTML: rowsHtml,
+        PAGE_CANONICAL: canonical(`/${townSlug}/${pathSuffix}`)
       });
     }
 
@@ -327,7 +340,8 @@ function townLatePharmacies(town) {
       const rowsHtml = rows.length
         ? table(["Term","Start","End","Inset Days"], rows.map(r => [r.term_name, r.start_date, r.end_date, (r.inset_dates || "").replace(/;/g, ", ")]))
         : "<p>Add term_dates.csv rows for this council.</p>";
-      writeFile(`${townSlug}/term-dates/index.html`, sectionPage("School term dates", `Council: ${council}`, rowsHtml, `School term dates in ${town}, ${county}.`));
+      writeFile(`${townSlug}/term-dates/index.html`,
+        sectionPage("term-dates/", "School term dates", `Council: ${council}`, rowsHtml, `School term dates in ${town}, ${county}.`));
     }
 
     // Bins
@@ -340,7 +354,8 @@ function townLatePharmacies(town) {
             <p><a href="${b.link_to_checker}" target="_blank" rel="nofollow">Go to council bin day checker</a></p>
             <p class="muted">Source: <a href="${b.source_url || "#"}" target="_blank" rel="nofollow">${b.source_url || ""}</a></p>`)
         : "<p>Add bins.csv row for this council.</p>";
-      writeFile(`${townSlug}/bin-collection/index.html`, sectionPage("Bin collection", `Council: ${council}`, rowsHtml, `Bin collection info and checker for ${town}.`));
+      writeFile(`${townSlug}/bin-collection/index.html`,
+        sectionPage("bin-collection/", "Bin collection", `Council: ${council}`, rowsHtml, `Bin collection info and checker for ${town}.`));
     }
 
     // Baby groups
@@ -349,7 +364,8 @@ function townLatePharmacies(town) {
       const rowsHtml = items.length
         ? list(items.map(v => `<strong>${v.name}</strong><br><span class="muted">${v.address || ""}</span><br>${v.opening_hours || ""}<br><a href="${v.url}" target="_blank" rel="nofollow">${v.url}</a>`))
         : "<p>Add baby groups to venues.csv (type=baby_group)</p>";
-      writeFile(`${townSlug}/baby-groups/index.html`, sectionPage("Baby & toddler groups", `Town: ${town}`, rowsHtml, `Baby and toddler groups in ${town}, ${county}.`));
+      writeFile(`${townSlug}/baby-groups/index.html`,
+        sectionPage("baby-groups/", "Baby & toddler groups", `Town: ${town}`, rowsHtml, `Baby and toddler groups in ${town}, ${county}.`));
     }
 
     // Soft play & parks
@@ -358,7 +374,8 @@ function townLatePharmacies(town) {
       const rowsHtml = items.length
         ? list(items.map(v => `<strong>${v.name}</strong> <span class="badge">${v.type}</span><br><span class="muted">${v.address || ""}</span><br>${v.price_note || ""}<br><a href="${v.url}" target="_blank" rel="nofollow">${v.url}</a>`))
         : "<p>Add soft play and parks to venues.csv (type=soft_play or park)</p>";
-      writeFile(`${townSlug}/soft-play-parks/index.html`, sectionPage("Soft play & parks", `Town: ${town}`, rowsHtml, `Soft play centres and parks in ${town}.`));
+      writeFile(`${townSlug}/soft-play-parks/index.html`,
+        sectionPage("soft-play-parks/", "Soft play & parks", `Town: ${town}`, rowsHtml, `Soft play centres and parks in ${town}.`));
     }
 
     // Pools family times
@@ -368,7 +385,8 @@ function townLatePharmacies(town) {
         ? table(["Session","Day","Start","End","Price","Link"], items.map(s =>
             [s.session_name, s.day_of_week, s.start_time, s.end_time, s.price_note || "", s.link ? `<a href="${s.link}" target="_blank" rel="nofollow">Timetable</a>` : "" ]))
         : "<p>Add pools_family.csv rows for this town.</p>";
-      writeFile(`${townSlug}/swimming-family-times/index.html`, sectionPage("Family swimming times", `Town: ${town}`, rowsHtml, `Family swim times and sessions in ${town}.`));
+      writeFile(`${townSlug}/swimming-family-times/index.html`,
+        sectionPage("swimming-family-times/", "Family swimming times", `Town: ${town}`, rowsHtml, `Family swim times and sessions in ${town}.`));
     }
 
     // Urgent care & pharmacies
@@ -385,7 +403,8 @@ function townLatePharmacies(town) {
           `<strong>${p.name}</strong> · open late ${p.days_open_late || ""} until ${p.close_time || ""}<br>${p.address || ""}<br><a href="${p.nhs_url}" target="_blank" rel="nofollow">NHS listing</a>`)));
       }
       const rowsHtml = parts.length ? parts.join("") : "<p>Add urgent care in venues.csv (type=urgent_care) and late pharmacies in pharmacy_late.csv.</p>";
-      writeFile(`${townSlug}/urgent-care-pharmacy/index.html`, sectionPage("Urgent care & late pharmacies", `Town: ${town}`, rowsHtml, `Urgent care and late pharmacies in ${town}.`));
+      writeFile(`${townSlug}/urgent-care-pharmacy/index.html`,
+        sectionPage("urgent-care-pharmacy/", "Urgent care & late pharmacies", `Town: ${town}`, rowsHtml, `Urgent care and late pharmacies in ${town}.`));
     }
 
     // Free this weekend
@@ -394,7 +413,8 @@ function townLatePharmacies(town) {
       const rowsHtml = items.length
         ? list(items.map(e => `<strong>${e.date}</strong> — <a href="${e.url}" target="_blank" rel="nofollow">${e.title}</a><br><span class="muted">${e.venue_name || ""} · ${e.venue_address || ""}</span>`))
         : "<p>No free events added for the next 7 days.</p>";
-      writeFile(`${townSlug}/free-this-weekend/index.html`, sectionPage("Free this weekend", `Town: ${town}`, rowsHtml, `Free events in ${town} this week.`));
+      writeFile(`${townSlug}/free-this-weekend/index.html`,
+        sectionPage("free-this-weekend/", "Free this weekend", `Town: ${town}`, rowsHtml, `Free events in ${town} this week.`));
     }
   });
 
@@ -422,12 +442,14 @@ function townLatePharmacies(town) {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`;
     writeFile("sitemap.xml", xml);
   })();
-writeFile('debug.json', JSON.stringify({
-  build_time: new Date().toISOString(),
-  places_count: places.length,
-  places: places.map(p => p.town_slug),
-  counties: Object.keys(townsByCounty).sort()
-}, null, 2));
+
+  // debug
+  writeFile('debug.json', JSON.stringify({
+    build_time: new Date().toISOString(),
+    places_count: places.length,
+    places: places.map(p => p.town_slug),
+    counties: Object.keys(townsByCounty).sort()
+  }, null, 2));
 
   console.log("Build complete.");
 })();

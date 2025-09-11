@@ -2,17 +2,17 @@
   "name": "hlin-starter",
   "version": "1.0.0",
   "private": true,
-  "description": "Hyper-Local Info Network static site starter",
   "scripts": {
     "prebuild": "node scrips/sync-places.mjs",
     "build": "node build.js",
-    "postbuild": "mkdir -p dist && cp -f _redirects dist/_redirects && cp -f _headers dist/_headers && cp -f ads.txt dist/ads.txt && cp -f robots.txt dist/robots.txt"
-    "serve": "npx http-server ./dist -p 8080 -c-1"
+    "postbuild": "mkdir -p dist && [ -f _redirects ] && cp -f _redirects dist/_redirects || true; [ -f _headers ] && cp -f _headers dist/_headers || true; [ -f ads.txt ] && cp -f ads.txt dist/ads.txt || true; [ -f robots.txt ] && cp -f robots.txt dist/robots.txt || true",
+    "serve": "npx http-server dist -p 8787 -c-1"
   },
   "dependencies": {
-    "csv-parse": "^5.6.0",
+    "csv-parse": "^5.5.6",
     "fs-extra": "^11.2.0"
   }
 }
+
 
 

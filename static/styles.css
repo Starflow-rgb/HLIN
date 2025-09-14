@@ -203,3 +203,39 @@ a.card small{ color: var(--muted); font-weight: 500; }
 /* Make long tables scroll on small screens (wrapper is in section.html) */
 .table-wrapper{ overflow-x: auto; }
 
+/* High-contrast Share styles */
+.sharebar .shr,
+.sharebar .share-item {
+  color: #111 !important;       /* force dark text */
+  font-weight: 700;             /* bold */
+  text-decoration: none;        /* no underline */
+  background: #fff;             /* white pill background */
+  border: 1px solid #cfcfcf;    /* crisper border */
+}
+
+.sharebar .share-item:visited {
+  color: #111 !important;       /* stop purple visited links */
+}
+
+.sharebar .shr:hover,
+.sharebar .share-item:hover {
+  background: #f3f3f3;          /* subtle hover */
+}
+
+.sharebar .shr:focus,
+.sharebar .share-item:focus {
+  outline: 2px solid #111;      /* visible keyboard focus */
+  outline-offset: 2px;
+}
+
+/* Ensure the dropdown panel is also readable */
+.share-menu {
+  background: #fff;             /* white panel */
+  color: #111;                  /* dark text */
+  border: 1px solid #cfcfcf;
+}
+
+/* If any parent sets a light-on-dark color, force black in the whole share area */
+.sharebar, .sharebar * {
+  color: #111 !important;
+}

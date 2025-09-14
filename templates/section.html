@@ -3,6 +3,8 @@
 {{PAGE_DESCRIPTION=Local info for your town.}}
 {{SITE_TITLE=Starflow Local}}
 {{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
+
+<!-- Breadcrumbs schema -->
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -16,7 +18,6 @@
 }
 </script>
 
-
 <nav class="muted" style="margin:10px 0 4px;">
   <a href="/{{TOWN_SLUG}}/">← Back to {{TOWN}}</a>
 </nav>
@@ -26,7 +27,140 @@
   <p class="muted" style="margin:0;">{{DESCRIPTION}}</p>
 </div>
 
+<!-- Minimal Share Bar -->
+<div class="sharebar" data-utmcampaign="{{TOWN_SLUG}}">
+  <button id="share-native">Share</button>
+  <a class="shr" id="share-whatsapp" href="#" target="_blank" rel="noopener">WhatsApp</a>
+  <a class="shr" id="share-facebook" href="#" target="_blank" rel="noopener">Facebook</a>
+  <button id="share-copy">Copy link</button>
+</div>
+
 <!-- Content list/table -->
 <div class="table-wrapper">
   {{LIST_HTML}}
 </div>
+
+<!-- Share + Schema injection -->
+<script>
+/*
+  Starflow Local — Share bar + Schema
+  - Emits ItemList schema for list pages (e.g., Soft play & parks).
+  - Emits Event schema for “Free this weekend” pages.
+  - Adds UTM tags to shared links (source=site, medium=share, campaign=town).
+*/
+(function () {
+  const $ = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+  const heading = document.querySelector('h2') || document.querySelector('h1');
+  const pageTitle = (heading?.textContent || document.title).trim();
+  const isEventsPage = /free this weekend/i.test(pageTitle);
+
+  // ===== Share Bar =====
+  (function initShare(){
+    const wrap = document.querySelector('.sharebar');
+    if (!wrap) return;
+    const url = new URL(window.location.href);
+    if (!url.searchParams.get('utm_source')) {
+      url.searchParams.set('utm_source','site');
+      url.searchParams.set('utm_medium','share');
+      url.searchParams.set('utm_campaign', wrap.dataset.utmcampaign || 'page');
+    }
+    const href = url.toString();
+    const title = pageTitle;
+
+    const w = document.getElementById('share-whatsapp');
+    if (w) w.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(title + ' — ' + href);
+
+    const f = document.getElementById('share-facebook');
+    if (f) f.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(href);
+
+    document.getElementById('share-copy')?.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(href); alert('Link copied'); }
+      catch { prompt('Copy link:', href); }
+    });
+
+    document.getElementById('share-native')?.addEventListener('click', async () => {
+      if (navigator.share) { try { await navigator.share({ title, url: href }); } catch(_){} }
+      else { window.open(f.href, '_blank'); }
+    });
+  })();
+
+  // ===== Collect list items (your pages render them as <ul><li>…</li></ul>) =====
+  const lis = $$('.table-wrapper li');
+  if (!lis.length) return;
+
+  function firstLineOf(li) {
+    return (li.textContent || '')
+      .split('\n')
+      .map(s => s.trim())
+      .filter(Boolean)[0] || '';
+  }
+
+  if (isEventsPage) {
+    // ===== Event schema for “Free this weekend” =====
+    const events = lis.map(li => {
+      const a = $('a[href^="http"]', li);
+      const line1 = firstLineOf(li);                 // e.g. "2025-09-19 — Heritage Open Days – …"
+      const dateMatch = line1.match(/^(\d{4}-\d{2}-\d{2})/);
+      const dateStr = dateMatch ? dateMatch[1] : '';
+      const name = (a?.textContent?.trim()) || line1.replace(/^\d{4}-\d{2}-\d{2}\s*—\s*/,'').trim();
+
+      // Try to capture a venue name like "Various venues · ..."
+      const venueLine = (li.textContent || '')
+        .split('\n').map(s=>s.trim()).filter(Boolean)
+        .find(s => /·/.test(s)) || '';
+      const venueName = venueLine ? venueLine.split('·')[0].trim() : '';
+
+      const obj = {
+        "@context": "https://schema.org",
+        "@type": "Event",
+        "name": name,
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "eventStatus": "https://schema.org/EventScheduled",
+        "isAccessibleForFree": true
+      };
+      if (a) obj.url = a.href;
+      if (dateStr) obj.startDate = dateStr; // date-only OK
+      if (venueName) obj.location = { "@type": "Place", "name": venueName };
+      return obj;
+    });
+
+    const s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.textContent = JSON.stringify({ "@context":"https://schema.org", "@graph": events });
+    document.head.appendChild(s);
+    return;
+  }
+
+  // ===== ItemList schema for venue lists (Soft play & parks, Pharmacies, etc.) =====
+  const items = lis.map((li, i) => {
+    const a = $('a[href^="http"]', li);
+    let name = firstLineOf(li); // first line is the venue name
+    name = name.replace(/\s+(soft_play|park|pharmacy|urgent_care|baby_group)\s*$/i, '').trim();
+    return {
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": name || (a?.textContent?.trim()) || document.title,
+      ...(a && { "url": a.href })
+    };
+  });
+
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": pageTitle,
+    "itemListElement": items
+  };
+  const s = document.createElement('script');
+  s.type = 'application/ld+json';
+  s.textContent = JSON.stringify(data);
+  document.head.appendChild(s);
+})();
+</script>
+
+<style>
+.sharebar{display:flex;gap:.5rem;align-items:center;margin:8px 0 16px}
+.sharebar .shr,.sharebar button{font:inherit;border:1px solid #ddd;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
+.sharebar .shr:hover,.sharebar button:hover{background:#f5f5f5}
+</style>

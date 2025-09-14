@@ -1,7 +1,7 @@
 {
   "BASE_URL": "https://starflow.uk",
   "sources": {
-    "places": "https://docs.google.com/spreadsheets/d/e/2PACX-1vT7TA_CR3IHpl5oVVDgK7Zs-M-gu7NWEcCKf58Ltb8bDhNWApc0AV5WDM4BZrhsgQ/pub?gid=908255209&single=true&output=csv",
+    "places": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlgg8rRwLuicnlI_1KVZALa-BUG82JLQ3zAgLB3-q7A02EE3mA_JLzdU9_iodIdyjwMjk_Tjquy7bN/pub?gid=908255209&single=true&output=csv",
     "term_dates": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlgg8rRwLuicnlI_1KVZALa-BUG82JLQ3zAgLB3-q7A02EE3mA_JLzdU9_iodIdyjwMjk_Tjquy7bN/pub?gid=1940374553&single=true&output=csv",
     "bins": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlgg8rRwLuicnlI_1KVZALa-BUG82JLQ3zAgLB3-q7A02EE3mA_JLzdU9_iodIdyjwMjk_Tjquy7bN/pub?gid=195184624&single=true&output=csv",
     "venues": "https://docs.google.com/spreadsheets/d/e/2PACX-1vRlgg8rRwLuicnlI_1KVZALa-BUG82JLQ3zAgLB3-q7A02EE3mA_JLzdU9_iodIdyjwMjk_Tjquy7bN/pub?gid=2025559599&single=true&output=csv",

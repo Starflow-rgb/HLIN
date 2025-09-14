@@ -239,3 +239,53 @@ a.card small{ color: var(--muted); font-weight: 500; }
 .sharebar, .sharebar * {
   color: #111 !important;
 }
+/* --- High-contrast Share dropdown (force overrides) --- */
+.sharebar,
+.sharebar * {
+  color: #111 !important;
+  -webkit-text-fill-color: #111 !important; /* WebKit edge cases */
+  opacity: 1 !important;                    /* undo any parent opacity */
+  mix-blend-mode: normal !important;        /* ignore blend tricks */
+}
+
+/* Trigger button (summary) */
+.share-dropdown summary.shr {
+  color: #111 !important;
+  font-weight: 700 !important;
+  background: #fff !important;
+  border: 1px solid #cfcfcf !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+}
+
+/* Panel container */
+.share-menu {
+  background: #fff !important;
+  color: #111 !important;
+  border: 1px solid #cfcfcf !important;
+  box-shadow: 0 6px 20px rgba(0,0,0,.12) !important;
+  border-radius: 10px !important;
+}
+
+/* Items (links + button) */
+.share-menu .share-item {
+  color: #111 !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+}
+
+.share-menu .share-item:hover,
+.share-menu .share-item:focus {
+  background: #f3f3f3 !important;
+}
+
+/* Kill purple visited link color in dark themes */
+.sharebar a:link,
+.sharebar a:visited,
+.sharebar a:active,
+.sharebar a:hover {
+  color: #111 !important;
+}

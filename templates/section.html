@@ -27,26 +27,23 @@
   <p class="muted" style="margin:0;">{{DESCRIPTION}}</p>
 </div>
 
-<!-- Share (dropdown) -->
-<div class="sharebar" data-utmcampaign="{{TOWN_SLUG}}">
-  <div class="share-dropdown">
-    <button type="button" id="share-toggle" class="shr"
-            aria-haspopup="true" aria-expanded="false" aria-controls="share-menu">
-      Share ▾
-    </button>
-    <div id="share-menu" class="share-menu" hidden>
-      <!-- Real hrefs for no-JS fallback; JS will upgrade with UTM + title -->
+<!-- Share (native details/summary dropdown; works without JS) -->
+<div class="sharebar">
+  <details id="share-dd" class="share-dropdown" data-utmcampaign="{{TOWN_SLUG}}">
+    <summary class="shr" aria-controls="share-menu" aria-expanded="false">Share ▾</summary>
+    <div id="share-menu" class="share-menu" role="menu">
+      <!-- Real HREFs for no-JS fallback; JS will upgrade with UTM + title -->
       <a class="share-item" id="share-whatsapp"
          href="https://api.whatsapp.com/send?text={{PAGE_CANONICAL}}"
-         target="_blank" rel="noopener">WhatsApp</a>
+         target="_blank" rel="noopener" role="menuitem">WhatsApp</a>
 
       <a class="share-item" id="share-facebook"
          href="https://www.facebook.com/sharer/sharer.php?u={{PAGE_CANONICAL}}"
-         target="_blank" rel="noopener">Facebook</a>
+         target="_blank" rel="noopener" role="menuitem">Facebook</a>
 
-      <button type="button" class="share-item" id="share-copy">Copy link</button>
+      <button type="button" class="share-item" id="share-copy" role="menuitem">Copy link</button>
     </div>
-  </div>
+  </details>
 </div>
 
 <!-- Content list/table -->
@@ -59,8 +56,13 @@
 
 <style>
 .sharebar{display:flex;justify-content:flex-start;margin:8px 0 16px}
-.shr{font:inherit;border:1px solid #ddd;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
+.shr{font:inherit;border:1px solid #ddd;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer;list-style:none}
 .shr:hover{background:#f5f5f5}
+/* Remove default triangle, we add our own ▾ text */
+.share-dropdown summary::-webkit-details-marker { display:none; }
+.share-dropdown summary { list-style:none; }
+
+/* Dropdown panel */
 .share-dropdown{position:relative;display:inline-block}
 .share-menu{
   position:absolute; top:100%; right:0;

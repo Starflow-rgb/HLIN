@@ -27,12 +27,13 @@
   <p class="muted" style="margin:0;">{{DESCRIPTION}}</p>
 </div>
 
-<!-- Minimal Share Bar (buttons, not anchors) -->
+<!-- Minimal Share Bar (progressive enhancement: real HREFs + JS enhancements) -->
 <div class="sharebar" data-utmcampaign="{{TOWN_SLUG}}">
-  <button type="button" class="shr" data-share="native">Share</button>
-  <button type="button" class="shr" data-share="whatsapp">WhatsApp</button>
-  <button type="button" class="shr" data-share="facebook">Facebook</button>
-  <button type="button" class="shr" data-share="copy">Copy link</button>
+  <!-- These links work even without JS -->
+  <a class="shr" id="share-native"   href="{{PAGE_CANONICAL}}" target="_blank" rel="noopener">Share</a>
+  <a class="shr" id="share-whatsapp" href="https://api.whatsapp.com/send?text={{PAGE_CANONICAL}}" target="_blank" rel="noopener">WhatsApp</a>
+  <a class="shr" id="share-facebook" href="https://www.facebook.com/sharer/sharer.php?u={{PAGE_CANONICAL}}" target="_blank" rel="noopener">Facebook</a>
+  <a class="shr" id="share-copy"     href="{{PAGE_CANONICAL}}" target="_blank" rel="noopener">Copy link</a>
 </div>
 
 <!-- Content list/table -->
@@ -43,71 +44,65 @@
 <!-- Share + Schema injection -->
 <script>
 /*
-  Starflow Local — Share bar (fixed) + Schema
-  - Buttons + preventDefault so clicks never navigate to "#" or current page.
-  - Emits ItemList schema for list pages (e.g., Soft play & parks).
+  Starflow Local — Share bar + Schema (robust)
+  - Links have real HREFs (work without JS). JS adds UTMs + native share + copy.
+  - Emits ItemList schema for list pages (soft plays, parks, pharmacies, etc.).
   - Emits Event schema for “Free this weekend” pages.
-  - Adds UTM tags to shared links (source=site, medium=share, campaign=town).
 */
 (function () {
   const $ = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-  const heading = document.querySelector('h2') || document.querySelector('h1');
+  const heading = $('h2') || $('h1');
   const pageTitle = (heading?.textContent || document.title).trim();
   const isEventsPage = /free this weekend/i.test(pageTitle);
 
-  // ===== Share Bar (buttons) =====
-  (function initShare(){
-    const wrap = document.querySelector('.sharebar');
-    if (!wrap) return;
+  // ===== Enhance Share Bar (keep links working even if this fails) =====
+  (function enhanceShare(){
+    const wrap = $('.sharebar'); if (!wrap) return;
 
-    const url = new URL(window.location.href);
-    if (!url.searchParams.get('utm_source')) {
-      url.searchParams.set('utm_source','site');
-      url.searchParams.set('utm_medium','share');
-      url.searchParams.set('utm_campaign', wrap.dataset.utmcampaign || 'page');
+    // Build UTM’d URL
+    const u = new URL(window.location.href);
+    if (!u.searchParams.get('utm_source')) {
+      u.searchParams.set('utm_source','site');
+      u.searchParams.set('utm_medium','share');
+      u.searchParams.set('utm_campaign', wrap.dataset.utmcampaign || 'page');
     }
-    const shareUrl = url.toString();
+    const shareUrl = u.toString();
     const shareTitle = pageTitle;
 
-    function openWin(u){ window.open(u, '_blank', 'noopener,noreferrer'); }
+    // Update hrefs with final URLs
+    const wa = $('#share-whatsapp');
+    if (wa) wa.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(shareTitle + ' — ' + shareUrl);
 
-    wrap.addEventListener('click', async (e) => {
-      const btn = e.target.closest('button[data-share]');
-      if (!btn) return;
-      e.preventDefault(); // stop any default navigation
-      const type = btn.getAttribute('data-share');
+    const fb = $('#share-facebook');
+    if (fb) fb.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl);
 
-      if (type === 'copy') {
-        try { await navigator.clipboard.writeText(shareUrl); alert('Link copied'); }
-        catch { prompt('Copy link:', shareUrl); }
-        return;
-      }
+    const cp = $('#share-copy');
+    if (cp) {
+      cp.addEventListener('click', function (e) {
+        e.preventDefault();
+        (async () => {
+          try { await navigator.clipboard.writeText(shareUrl); alert('Link copied'); }
+          catch { prompt('Copy link:', shareUrl); }
+        })();
+      }, { passive:false });
+      // keep cp.href as a fallback target for no-JS browsers
+    }
 
-      if (type === 'native') {
+    const nat = $('#share-native');
+    if (nat) {
+      nat.addEventListener('click', function (e) {
+        e.preventDefault();
         if (navigator.share) {
-          try { await navigator.share({ title: shareTitle, url: shareUrl }); } catch(_) {}
+          navigator.share({ title: shareTitle, url: shareUrl }).catch(()=>{});
         } else {
-          // Fallback to Facebook share
-          openWin('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl));
+          // Fallback to Facebook dialog
+          window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl), '_blank', 'noopener,noreferrer');
         }
-        return;
-      }
-
-      if (type === 'whatsapp') {
-        // Works on mobile & desktop web
-        const wa = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(shareTitle + ' — ' + shareUrl);
-        openWin(wa);
-        return;
-      }
-
-      if (type === 'facebook') {
-        const fb = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl);
-        openWin(fb);
-        return;
-      }
-    });
+      }, { passive:false });
+      // native.href remains as page canonical for no-JS fallback
+    }
   })();
 
   // ===== Collect list items (your pages render them as <ul><li>…</li></ul>) =====
@@ -125,7 +120,7 @@
     // ===== Event schema for “Free this weekend” =====
     const events = lis.map(li => {
       const a = $('a[href^="http"]', li);
-      const line1 = firstLineOf(li);                 // e.g. "2025-09-19 — Heritage Open Days – …"
+      const line1 = firstLineOf(li);                 // e.g. "2025-09-19 — Heritage Open Days …"
       const dateMatch = line1.match(/^(\d{4}-\d{2}-\d{2})/);
       const dateStr = dateMatch ? dateMatch[1] : '';
       const name = (a?.textContent?.trim()) || line1.replace(/^\d{4}-\d{2}-\d{2}\s*—\s*/,'').trim();
@@ -185,6 +180,6 @@
 
 <style>
 .sharebar{display:flex;gap:.5rem;align-items:center;margin:8px 0 16px}
-.sharebar .shr{font:inherit;border:1px solid #ddd;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
+.sharebar .shr{font:inherit;border:1px solid #ddd;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer;text-decoration:none}
 .sharebar .shr:hover{background:#f5f5f5}
 </style>

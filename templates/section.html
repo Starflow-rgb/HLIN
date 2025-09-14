@@ -27,12 +27,12 @@
   <p class="muted" style="margin:0;">{{DESCRIPTION}}</p>
 </div>
 
-<!-- Minimal Share Bar -->
+<!-- Minimal Share Bar (buttons, not anchors) -->
 <div class="sharebar" data-utmcampaign="{{TOWN_SLUG}}">
-  <button id="share-native">Share</button>
-  <a class="shr" id="share-whatsapp" href="#" target="_blank" rel="noopener">WhatsApp</a>
-  <a class="shr" id="share-facebook" href="#" target="_blank" rel="noopener">Facebook</a>
-  <button id="share-copy">Copy link</button>
+  <button type="button" class="shr" data-share="native">Share</button>
+  <button type="button" class="shr" data-share="whatsapp">WhatsApp</button>
+  <button type="button" class="shr" data-share="facebook">Facebook</button>
+  <button type="button" class="shr" data-share="copy">Copy link</button>
 </div>
 
 <!-- Content list/table -->
@@ -43,7 +43,8 @@
 <!-- Share + Schema injection -->
 <script>
 /*
-  Starflow Local — Share bar + Schema
+  Starflow Local — Share bar (fixed) + Schema
+  - Buttons + preventDefault so clicks never navigate to "#" or current page.
   - Emits ItemList schema for list pages (e.g., Soft play & parks).
   - Emits Event schema for “Free this weekend” pages.
   - Adds UTM tags to shared links (source=site, medium=share, campaign=town).
@@ -56,33 +57,56 @@
   const pageTitle = (heading?.textContent || document.title).trim();
   const isEventsPage = /free this weekend/i.test(pageTitle);
 
-  // ===== Share Bar =====
+  // ===== Share Bar (buttons) =====
   (function initShare(){
     const wrap = document.querySelector('.sharebar');
     if (!wrap) return;
+
     const url = new URL(window.location.href);
     if (!url.searchParams.get('utm_source')) {
       url.searchParams.set('utm_source','site');
       url.searchParams.set('utm_medium','share');
       url.searchParams.set('utm_campaign', wrap.dataset.utmcampaign || 'page');
     }
-    const href = url.toString();
-    const title = pageTitle;
+    const shareUrl = url.toString();
+    const shareTitle = pageTitle;
 
-    const w = document.getElementById('share-whatsapp');
-    if (w) w.href = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(title + ' — ' + href);
+    function openWin(u){ window.open(u, '_blank', 'noopener,noreferrer'); }
 
-    const f = document.getElementById('share-facebook');
-    if (f) f.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(href);
+    wrap.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button[data-share]');
+      if (!btn) return;
+      e.preventDefault(); // stop any default navigation
+      const type = btn.getAttribute('data-share');
 
-    document.getElementById('share-copy')?.addEventListener('click', async () => {
-      try { await navigator.clipboard.writeText(href); alert('Link copied'); }
-      catch { prompt('Copy link:', href); }
-    });
+      if (type === 'copy') {
+        try { await navigator.clipboard.writeText(shareUrl); alert('Link copied'); }
+        catch { prompt('Copy link:', shareUrl); }
+        return;
+      }
 
-    document.getElementById('share-native')?.addEventListener('click', async () => {
-      if (navigator.share) { try { await navigator.share({ title, url: href }); } catch(_){} }
-      else { window.open(f.href, '_blank'); }
+      if (type === 'native') {
+        if (navigator.share) {
+          try { await navigator.share({ title: shareTitle, url: shareUrl }); } catch(_) {}
+        } else {
+          // Fallback to Facebook share
+          openWin('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl));
+        }
+        return;
+      }
+
+      if (type === 'whatsapp') {
+        // Works on mobile & desktop web
+        const wa = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(shareTitle + ' — ' + shareUrl);
+        openWin(wa);
+        return;
+      }
+
+      if (type === 'facebook') {
+        const fb = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(shareUrl);
+        openWin(fb);
+        return;
+      }
     });
   })();
 
@@ -161,6 +185,6 @@
 
 <style>
 .sharebar{display:flex;gap:.5rem;align-items:center;margin:8px 0 16px}
-.sharebar .shr,.sharebar button{font:inherit;border:1px solid #ddd;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
-.sharebar .shr:hover,.sharebar button:hover{background:#f5f5f5}
+.sharebar .shr{font:inherit;border:1px solid #ddd;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
+.sharebar .shr:hover{background:#f5f5f5}
 </style>

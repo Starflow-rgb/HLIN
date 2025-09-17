@@ -1,66 +1,98 @@
 {{#layout}}
-{{PAGE_TITLE=Starflow Local}}
-{{PAGE_DESCRIPTION=Local info}}
-{{SITE_TITLE=Starflow Local}}
-{{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
+{{PAGE_TITLE=Find free family plans near you | Starflow Local}}
+{{PAGE_DESCRIPTION=Soft play, free events this weekend, term dates, bins, late pharmacies and family pools — all in one place.}}
+{{PAGE_CANONICAL=https://local.starflow.uk/}}
 
-<h2>Browse towns</h2>
-<div class="grid">
+<section class="hero" style="margin: 0 0 1.25rem 0;">
+  <h2 class="muted" style="margin:0 0 .25rem 0;">Find free family plans near you</h2>
+
+  <!-- Big search -->
+  <div style="margin:.5rem 0 1rem 0;">
+    <input id="home-search" type="search"
+           placeholder="Search by town (e.g., Watford, St Albans, Hatfield)…"
+           aria-label="Search towns"
+           style="width:100%;max-width:720px;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:#0f172a;color:#fff;outline:none;">
+    <p id="search-hint" class="muted" style="margin:.35rem 0 0 0;font-size:.9rem;">
+      Quick picks:
+      <a href="/watford/">Watford</a> ·
+      <a href="/st-albans/">St Albans</a> ·
+      <a href="/hatfield/">Hatfield</a>
+    </p>
+  </div>
+
+  <!-- Category chips -->
+  <nav aria-label="Categories" style="display:flex;flex-wrap:wrap;gap:.5rem;margin:.25rem 0 0 0;">
+    <a href="#browse" class="chip">Soft Play</a>
+    <a href="#browse" class="chip">Free this weekend</a>
+    <a href="#browse" class="chip">Term dates</a>
+    <a href="#browse" class="chip">Bins</a>
+    <a href="#browse" class="chip">Late pharmacy</a>
+    <a href="#browse" class="chip">Family pools</a>
+    <a href="/deals/" class="chip">Deals</a>
+  </nav>
+</section>
+
+<hr style="border:none;height:1px;background:rgba(255,255,255,.08);margin:1rem 0 1.25rem 0;">
+
+<h2 id="browse" style="margin:.25rem 0 1rem 0;">Browse towns</h2>
+
+<!-- Results summary (updated by JS) -->
+<p id="results-note" class="muted" style="margin:-.5rem 0 1rem 0;font-size:.9rem;" aria-live="polite"></p>
+
+<!-- Town cards grid -->
+<div id="town-grid" class="grid">
   {{TOWN_CARDS}}
 </div>
 
-<div id="uk-coverage"></div>
-<script type="module">
-async function loadCoverage() {
-  const target = document.getElementById("uk-coverage");
-  if (!target) return;
-
-  // fetch latest local CSV (same-origin = no CORS issues)
-  const res = await fetch("/data/places.csv?d=" + Date.now());
-  const text = (await res.text()).trim();
-
-  // simple CSV parse (works for our headers/rows without quoted commas)
-  const lines = text.split(/\r?\n/).filter(Boolean);
-  const headers = lines.shift().split(",").map(s => s.trim());
-  const idx = Object.fromEntries(headers.map((h, i) => [h, i]));
-
-  const rows = lines.map(line => line.split(",").map(s => s.trim()));
-  const items = rows.map(r => ({
-    town: r[idx.town],
-    slug: r[idx.town_slug],
-    county: r[idx.county] || "Other"
-  })).filter(x => x.town && x.slug);
-
-  // group by county
-  const byCounty = {};
-  for (const it of items) {
-    (byCounty[it.county] ||= []).push(it);
+<!-- Minimal styles for the “chip” links (uses your dark palette) -->
+<style>
+  .chip {
+    display:inline-block;
+    padding:.5rem .75rem;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.12);
+    text-decoration:none;
+    font-size:.95rem;
+    color:#e5e7eb;
+    background:rgba(255,255,255,.03);
   }
+  .chip:hover { border-color:rgba(255,255,255,.28); background:rgba(255,255,255,.06); }
+</style>
 
-  // render
-  const frag = document.createDocumentFragment();
-  for (const county of Object.keys(byCounty).sort()) {
-    const section = document.createElement("section");
-    const h3 = document.createElement("h3");
-    h3.textContent = county;
-    section.appendChild(h3);
+<!-- Client-side town search (no dependencies) -->
+<script>
+(function(){
+  const q = document.getElementById('home-search');
+  const grid = document.getElementById('town-grid');
+  const cards = Array.from(grid.querySelectorAll('a.card'));
+  const note = document.getElementById('results-note');
 
-    const p = document.createElement("p");
-    byCounty[county]
-      .sort((a,b) => a.town.localeCompare(b.town))
-      .forEach((it, i, arr) => {
-        const a = document.createElement("a");
-        a.href = `/uk/${it.slug}/`; // adjust if your route differs
-        a.textContent = it.town;
-        p.appendChild(a);
-        if (i < arr.length - 1) p.appendChild(document.createTextNode(" · "));
-      });
-    section.appendChild(p);
-    frag.appendChild(section);
+  function norm(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+
+  function update(){
+    const term = norm(q.value);
+    let shown = 0;
+    cards.forEach(a=>{
+      const hay = norm(a.textContent);
+      const ok = !term || hay.includes(term);
+      a.style.display = ok ? '' : 'none';
+      if(ok) shown++;
+    });
+    note.textContent = term
+      ? (shown ? `Showing ${shown} town${shown>1?'s':''} matching “${q.value}”.` : `No towns found for “${q.value}”.`)
+      : '';
   }
+  q.addEventListener('input', update);
 
-  target.innerHTML = "";
-  target.appendChild(frag);
-}
-loadCoverage();
+  // Allow category chips to focus the search + scroll to grid
+  document.querySelectorAll('a.chip[href="#browse"]').forEach(chip=>{
+    chip.addEventListener('click', (e)=>{
+      // scroll handled by anchor; we just focus input for fast typing
+      setTimeout(()=> q.focus(), 50);
+    });
+  });
+
+  // Initial state
+  update();
+})();
 </script>

@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "node scrips/sync-places.mjs",
     "build": "node build.js",
-    "postbuild": "mkdir -p dist && [ -f _redirects ] && cp -f _redirects dist/_redirects || true; [ -f _headers ] && cp -f _headers dist/_headers || true; [ -f ads.txt ] && cp -f ads.txt dist/ads.txt || true; [ -f robots.txt ] && cp -f robots.txt dist/robots.txt || true; [ -d deals ] && cp -R deals dist/deals || true"
+    "postbuild": "mkdir -p dist && [ -f _redirects ] && cp -f _redirects dist/_redirects || true; [ -f _headers ] && cp -f _headers dist/_headers || true; [ -f ads.txt ] && cp -f ads.txt dist/ads.txt || true; [ -f robots.txt ] && cp -f robots.txt dist/robots.txt || true; [ -d deals ] && cp -R deals dist/deals || true",
     "serve": "npx http-server dist -p 8787 -c-1"
   },
   "dependencies": {
@@ -13,6 +13,7 @@
     "fs-extra": "^11.2.0"
   }
 }
+
 
 
 

@@ -1,19 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Site-level structured data -->
   <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Starflow Local",
-  "url": "https://local.starflow.uk",
-  "publisher": {
-    "@type": "Organization",
-    "name": "Starflow Local"
-  },
-  "inLanguage": "en-GB"
-}
-</script>
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Starflow Local",
+    "url": "https://local.starflow.uk",
+    "publisher": { "@type": "Organization", "name": "Starflow Local" },
+    "inLanguage": "en-GB"
+  }
+  </script>
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -37,16 +35,15 @@
   <link rel="stylesheet" href="/static/styles.css" />
   {{HEAD_EXTRAS}}
 
-  <!-- (Your CMP snippet should already be installed by you) -->
-  <!-- Place CMP script before analytics/ads tags. No extra ID needed here. -->
+  <!-- CMP should load before analytics/ads (you’ve already added your CMP) -->
 
-  <!-- Google Analytics (gtag.js) — ONE instance only -->
+  <!-- Google Analytics (gtag.js) — single instance -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-DT54KZVJK2"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
 
-    // Consent Mode v2 — default deny; CMP will update this automatically
+    // Consent Mode v2 — default deny; CMP updates after user choice
     gtag('consent', 'default', {
       analytics_storage: 'denied',
       ad_storage: 'denied',
@@ -59,7 +56,7 @@
     gtag('config', 'G-DT54KZVJK2', { anonymize_ip: true, send_page_view: true });
   </script>
 
-  <!-- AdSense Auto ads loader (no manual ad slots needed) -->
+  <!-- AdSense Auto ads loader -->
   <script async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1442631119014786"
     crossorigin="anonymous"></script>
@@ -67,46 +64,49 @@
 
 <body>
   <script>
-    // Outbound link tracking (optional)
+    // Minimal navigation/outbound tracking (you said no extra tracking beyond this)
     document.addEventListener('click', e => {
-      const a = e.target.closest('a'); if(!a) return;
-      const url = a.href;
+      const a = e.target.closest('a'); if (!a) return;
       const isExternal = a.host && a.host !== location.host;
-      if(isExternal) gtag('event','outbound_click',{link_url:url,link_text:a.textContent.trim()});
-      if(a.closest('nav') || a.href.includes('/uk/')) gtag('event','select_town',{link_text:a.textContent.trim(),link_url:url});
+      if (isExternal) gtag('event','outbound_click',{link_url:a.href,link_text:(a.textContent||'').trim()});
+      if (a.closest('nav') || a.href.includes('/uk/')) {
+        gtag('event','select_town',{link_text:(a.textContent||'').trim(),link_url:a.href});
+      }
     });
   </script>
 
   <header>
     <div class="container">
-      <nav><a href="/">Home</a> · <a href="/uk/">UK Index</a></nav>
+      <!-- TOP NAV: Home · UK Index · Deals -->
+      <nav>
+        <a href="/">Home</a> ·
+        <a href="/uk/">UK Index</a> ·
+        <a href="/deals/">Deals</a>
+      </nav>
+
       <h1>{{SITE_TITLE}}</h1>
       <p class="muted">{{SITE_TAGLINE}}</p>
     </div>
   </header>
 
+  <!-- PAGE CONTENT -->
   <main class="container">
     {{CONTENT}}
   </main>
 
+  <!-- SINGLE FOOTER (consolidated) -->
   <footer>
     <div class="container">
-      <p>© {{YEAR}} {{SITE_TITLE}}. Info from public sources; check links for latest.
-        <a href="/about/">About</a> · <a href="/contact/">Contact</a> ·
-        <a href="/updates/">Submit an update</a>
+      <p>
+        © {{YEAR}} {{SITE_TITLE}}. Info from public sources; check links for latest.
+        <a href="/about/">About</a> ·
+        <a href="/contact/">Contact</a> ·
+        <a href="/updates/">Submit an update</a> ·
+        <a href="/privacy/">Privacy</a> ·
+        <a href="/disclosure/">Affiliate Disclosure</a> ·
+        <a href="/deals/">Deals</a>
       </p>
     </div>
   </footer>
 </body>
-  <footer style="padding:16px 0; text-align:center; font-size:14px;">
-  <nav>
-    <a href="/contact/">Contact</a> ·
-    <a href="/privacy/">Privacy</a> ·
-    <a href="/disclosure/">Affiliate Disclosure</a>
-  </nav>
-    
-</footer>
-
-
 </html>
-

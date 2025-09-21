@@ -329,3 +329,75 @@ a.card small{ color: var(--muted); font-weight: 500; }
 .sharebar a:hover {
   color: #111 !important;
 }
+/* ===== Light-mode HOT FIXES (place at very end of styles.css) ============ */
+@media (prefers-color-scheme: light) {
+  /* 1) Search bar: make it readable on light backgrounds */
+  .searchbar input,
+  .search input,
+  input[type="search"],
+  .search-input {
+    background: #ffffff !important;
+    color: var(--text) !important;
+    border: 1px solid #cfd6e4 !important;
+    border-radius: 14px !important;
+    box-shadow: var(--shadow-sm) !important;
+    padding: 14px 16px !important;
+  }
+  .searchbar input::placeholder,
+  .search input::placeholder,
+  input[type="search"]::placeholder,
+  .search-input::placeholder {
+    color: var(--placeholder) !important;
+  }
+
+  /* 2) Category chips row under the search box */
+  /* Works whether you used .chips/.chip or plain links */
+  .chips a,
+  .chips .chip,
+  .chip,
+  .pill,
+  .category-pills a,
+  .quick-actions a,
+  .hero-actions a {
+    background: var(--chip-bg) !important;
+    color: var(--chip-text) !important;
+    border: 1px solid var(--chip-border) !important;
+    border-radius: 999px !important;
+    padding: 8px 12px !important;
+    font-weight: 700 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    text-decoration: none !important;
+    box-shadow: var(--shadow-sm) !important;
+    opacity: 1 !important;                 /* kill “disabled” look */
+    mix-blend-mode: normal !important;
+    -webkit-text-fill-color: var(--chip-text) !important;
+  }
+  .chips a:hover,
+  .chip:hover,
+  .pill:hover,
+  .category-pills a:hover,
+  .quick-actions a:hover,
+  .hero-actions a:hover {
+    box-shadow: var(--shadow-sm) !important;
+    filter: none !important;
+  }
+
+  /* Only dim if truly disabled */
+  .chip[aria-disabled="true"],
+  .pill[aria-disabled="true"] {
+    opacity: .55 !important;
+    cursor: not-allowed !important;
+  }
+
+  /* 3) Make sure links are visibly links */
+  a { text-decoration: underline; text-underline-offset: 2px; }
+  a:hover { color: var(--brand-700); }
+}
+
+/* 4) Last resort: if any parent set low opacity on the whole row, null it */
+.category-pills, .quick-actions, .hero-actions, .chips {
+  opacity: 1 !important;
+  filter: none !important;
+}
+

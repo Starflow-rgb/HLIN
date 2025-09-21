@@ -43,7 +43,7 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){ dataLayer.push(arguments); }
 
-    // Consent Mode v2 — default deny; CMP updates after user choice
+    // Consent Mode v2 — default deny; CMP/consent script will update this
     gtag('consent', 'default', {
       analytics_storage: 'denied',
       ad_storage: 'denied',
@@ -108,5 +108,8 @@
       </p>
     </div>
   </footer>
+
+  <!-- Temporary consent banner (loads from /static/consent.js) -->
+  <script defer src="/static/consent.js"></script>
 </body>
 </html>

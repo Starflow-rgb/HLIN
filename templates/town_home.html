@@ -3,6 +3,7 @@
 {{PAGE_DESCRIPTION=Local info for your town.}}
 {{SITE_TITLE=Starflow Local}}
 {{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
+
 <script type="application/ld+json">
 {
   "@context":"https://schema.org",
@@ -15,6 +16,8 @@
 }
 </script>
 
+<!-- Expose town name to JS -->
+<script>window.PAGE_TOWN = '{{TOWN}}';</script>
 
 <!-- Hero -->
 <div class="card" style="margin:14px 0 18px;">
@@ -47,7 +50,8 @@
 
   <section class="card">
     <h3>Baby &amp; toddler groups</h3>
-    <div class="muted" style="margin:.4rem 0 1rem;">{{BABY_SUMMARY}}</div>
+    <!-- We’ll replace this text at runtime -->
+    <div id="baby-summary" class="muted" style="margin:.4rem 0 1rem;">{{BABY_SUMMARY}}</div>
     <div class="actions">
       <a class="btn" href="/{{TOWN_SLUG}}/baby-groups/">See groups</a>
     </div>
@@ -86,3 +90,72 @@
   </section>
 
 </div>
+
+<!-- Baby Groups summary loader -->
+<script>
+(function(){
+  // Your published CSV (left a cache-buster you can change any time)
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRlgg8rRwLuicnlI_1KVZALa-BUG82JLQ3zAgLB3-q7A02EE3mA_JLzdU9_iodIdyjwMjk_Tjquy7bN/pub?gid=1019184371&single=true&output=csv&v=2025-09-22';
+  const TOWN = (window.PAGE_TOWN || '').trim().toLowerCase();
+  const el = document.getElementById('baby-summary');
+  if (!el || !TOWN) return;
+
+  fetch(CSV_URL, {cache:'no-store'})
+    .then(r => r.text())
+    .then(text => {
+      const rows = parseCSV(text);
+      if (!rows.length) return;
+      const header = rows.shift().map(h => h.trim());
+      const idx = Object.fromEntries(header.map((h,i)=>[h,i]));
+
+      function get(col, r) { return r[idx[col]] || ''; }
+
+      const townRows = rows.filter(r => (get('town', r).trim().toLowerCase() === TOWN));
+
+      if (!townRows.length) {
+        el.textContent = 'No listings yet — help us add some?';
+        return;
+      }
+
+      // Count unique groups (group_name + venue_name)
+      const unique = new Set(townRows.map(r => (get('group_name',r).trim() + '|' + get('venue_name',r).trim())));
+      const count = unique.size;
+
+      // Build “days covered” → e.g., Mon–Sat
+      const days = Array.from(new Set(townRows.map(r => (get('day_of_week',r).split(';').map(d=>d.trim())).flat())))
+        .filter(Boolean);
+      const order = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+      days.sort((a,b)=> order.indexOf(a)-order.indexOf(b));
+      const daySpan = days.length ? (days[0] + (days.length>1 ? '–' + days[days.length-1] : '')) : '';
+
+      // Find an example next time (just show earliest start_time alphabetically for a nice hint)
+      const times = townRows.map(r => (get('start_time',r)||'')).filter(Boolean).sort();
+      const example = times[0] ? ` • next from ${times[0]}` : '';
+
+      el.textContent = `${count} listing${count!==1?'s':''}${daySpan?` • ${daySpan}`:''}${example}`;
+    })
+    .catch(_ => {
+      el.textContent = 'Baby groups data unavailable right now.';
+    });
+
+  // Minimal CSV parser with quotes support
+  function parseCSV(text){
+    const out = []; let row = [], cell = '', q = false;
+    for (let i=0;i<text.length;i++){
+      const c=text[i], n=text[i+1];
+      if (q){
+        if (c === '"' && n === '"'){ cell+='"'; i++; }
+        else if (c === '"'){ q=false; }
+        else { cell+=c; }
+      } else {
+        if (c === '"') q = true;
+        else if (c === ','){ row.push(cell); cell=''; }
+        else if (c === '\n'){ row.push(cell); out.push(row); row=[]; cell=''; }
+        else if (c !== '\r'){ cell+=c; }
+      }
+    }
+    if (cell.length || row.length){ row.push(cell); out.push(row); }
+    return out;
+  }
+})();
+</script>

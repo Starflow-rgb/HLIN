@@ -340,17 +340,21 @@ function townLatePharmacies(town){ return pharmacyLate.filter(p => eq(p.town, to
       writeFile(`${townSlug}/bin-collection/index.html`, sectionPage("bin-collection/", "Bin collection", `Council: ${council}`, rowsHtml, `Bin collection info and checker for ${town}.`));
 
       }
-    // baby groups (CSV-powered via templates/baby_groups.html)
+  // baby groups (CSV-powered via templates/baby_groups.html) — with explicit meta
 {
   const html = renderTemplate("baby_groups.html", {
     TOWN: town,
     TOWN_SLUG: townSlug,
     COUNTY: county,
     COUNCIL: council,
-    PAGE_CANONICAL: canonical(`/${townSlug}/baby-groups/`)
+    PAGE_CANONICAL: canonical(`/${townSlug}/baby-groups/`),
+    // Explicit meta so {{TOWN}} inside template meta isn't needed
+    PAGE_TITLE: `Baby & toddler groups in ${town} | Starflow Local`,
+    PAGE_DESCRIPTION: `Clubs, groups and sessions for babies & toddlers in ${town}.`
   });
   writeFile(`${townSlug}/baby-groups/index.html`, html);
 }
+
 
     // soft play & parks
     {

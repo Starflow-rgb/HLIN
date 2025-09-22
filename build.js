@@ -338,15 +338,20 @@ function townLatePharmacies(town){ return pharmacyLate.filter(p => eq(p.town, to
             <p class="muted">Source: <a href="${b.source_url || "#"}" target="_blank" rel="nofollow">${b.source_url || ""}</a></p>`)
         : "<p>Add bins.csv row for this council.</p>";
       writeFile(`${townSlug}/bin-collection/index.html`, sectionPage("bin-collection/", "Bin collection", `Council: ${council}`, rowsHtml, `Bin collection info and checker for ${town}.`));
-    }
-    // baby groups
-    {
-      const items = townVenues(town, ["baby_group"]);
-      const rowsHtml = items.length
-        ? list(items.map(v => `<strong>${v.name}</strong><br><span class="muted">${v.address || ""}</span><br>${v.opening_hours || ""}<br><a href="${v.url}" target="_blank" rel="nofollow">${v.url}</a>`))
-        : "<p>Add baby groups to venues.csv (type=baby_group)</p>";
-      writeFile(`${townSlug}/baby-groups/index.html`, sectionPage("baby-groups/", "Baby & toddler groups", `Town: ${town}`, rowsHtml, `Baby and toddler groups in ${town}, ${county}.`));
-    }
+
+      }
+    // baby groups (CSV-powered via templates/baby_groups.html)
+{
+  const html = renderTemplate("baby_groups.html", {
+    TOWN: town,
+    TOWN_SLUG: townSlug,
+    COUNTY: county,
+    COUNCIL: council,
+    PAGE_CANONICAL: canonical(`/${townSlug}/baby-groups/`)
+  });
+  writeFile(`${townSlug}/baby-groups/index.html`, html);
+}
+
     // soft play & parks
     {
       const items = townVenues(town, ["soft_play","park"]);

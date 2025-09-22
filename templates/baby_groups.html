@@ -1,0 +1,145 @@
+{{#layout}}
+{{PAGE_TITLE=Baby & toddler groups in {{TOWN}} | Starflow Local}}
+{{PAGE_DESCRIPTION=Clubs, groups and sessions for babies & toddlers in {{TOWN}}.}}
+{{SITE_TITLE=Starflow Local}}
+{{SITE_TAGLINE=Helpful local info. No hype, just answers.}}
+
+<script>window.PAGE_TOWN='{{TOWN}}';</script>
+
+<div class="card" style="margin:14px 0 18px;">
+  <div class="muted" style="font-weight:600; text-transform:uppercase; letter-spacing:.04em;">
+    {{COUNTY}} · {{COUNCIL}}
+  </div>
+  <h2 style="margin:.25rem 0 .5rem;">Baby &amp; toddler groups in {{TOWN}}</h2>
+  <p class="muted" style="margin:0;">Listings pulled live from the public HLIN sheet.</p>
+</div>
+
+<section id="baby-groups" class="stack">
+  <div id="filters" class="muted" style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+    <label>Day:
+      <select id="f-day">
+        <option value="">All</option>
+        <option>Mon</option><option>Tue</option><option>Wed</option>
+        <option>Thu</option><option>Fri</option><option>Sat</option><option>Sun</option>
+      </select>
+    </label>
+    <label>Booking:
+      <select id="f-booking">
+        <option value="">All</option>
+        <option value="No">Drop-in</option>
+        <option value="Yes">Booking</option>
+      </select>
+    </label>
+    <input id="f-q" type="search" placeholder="Search name/venue…" style="flex:1; padding:6px;">
+  </div>
+
+  <div id="baby-groups-list" class="cards"></div>
+</section>
+
+<script>
+(function(){
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRlgg8rRwLuicnlI_1KVZALa-BUG82JLQ3zAgLB3-q7A02EE3mA_JLzdU9_iodIdyjwMjk_Tjquy7bN/pub?gid=1019184371&single=true&output=csv&v=2025-09-22';
+  const TOWN = (window.PAGE_TOWN||'').trim().toLowerCase();
+
+  const $list = id('baby-groups-list'), $day = id('f-day'), $book = id('f-booking'), $q = id('f-q');
+  let rows=[], idx={};
+
+  fetch(CSV_URL,{cache:'no-store'}).then(r=>r.text()).then(t=>{
+    const data = parseCSV(t);
+    const header = data.shift().map(h=>h.trim());
+    idx = Object.fromEntries(header.map((h,i)=>[h,i]));
+    rows = data
+      .filter(r => (get('town',r).trim().toLowerCase()===TOWN))
+      .map(r => ({
+        group: get('group_name',r),
+        venue: get('venue_name',r),
+        address: [get('address',r), get('postcode',r)].filter(Boolean).join(' '),
+        day: get('day_of_week',r),
+        start: get('start_time',r),
+        end: get('end_time',r),
+        age: get('age_range',r),
+        price: get('price',r),
+        booking: get('booking_required',r),
+        url: get('website_url',r) || get('source_url',r),
+        notes: get('notes',r),
+        last: get('last_checked',r)
+      }));
+    render();
+  }).catch(_=>{
+    $list.innerHTML = '<p>Baby groups are unavailable right now.</p>';
+  });
+
+  [$day,$book,$q].forEach(el=>el.addEventListener('input', render));
+
+  function render(){
+    const day = $day.value, book = $book.value, q = $q.value.trim().toLowerCase();
+    let filtered = rows.slice();
+
+    if (day) filtered = filtered.filter(x => (x.day||'').split(';').map(s=>s.trim()).includes(day));
+    if (book) filtered = filtered.filter(x => (x.booking||'')===book);
+    if (q) filtered = filtered.filter(x =>
+      [x.group,x.venue,x.address,x.notes].some(s => (s||'').toLowerCase().includes(q))
+    );
+
+    if (!filtered.length){
+      $list.innerHTML = '<p class="muted">No matches yet. Try another filter.</p>';
+      return;
+    }
+
+    // sort by day, then time
+    const order = {Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:7};
+    filtered.sort((a,b)=>{
+      const ad=(a.day||'').split(';')[0]||'', bd=(b.day||'').split(';')[0]||'';
+      if ((order[ad]||99)!==(order[bd]||99)) return (order[ad]||99)-(order[bd]||99);
+      return (a.start||'').localeCompare(b.start||'');
+    });
+
+    $list.innerHTML = filtered.map(renderCard).join('');
+  }
+
+  function renderCard(x){
+    const when = [x.day, [x.start,x.end].filter(Boolean).join('–')].filter(Boolean).join(' ');
+    return `
+      <article class="card">
+        <h3>${esc(x.group||'Group')}</h3>
+        ${x.venue?`<p><strong>Venue:</strong> ${esc(x.venue)}</p>`:''}
+        ${x.address?`<p><strong>Address:</strong> ${esc(x.address)}</p>`:''}
+        ${when?`<p><strong>When:</strong> ${esc(when)}</p>`:''}
+        <p>
+          ${x.age?`<strong>Age:</strong> ${esc(x.age)} · `:''}
+          ${x.price?`<strong>Price:</strong> ${esc(x.price)} · `:''}
+          ${x.booking?`<strong>Booking:</strong> ${esc(x.booking)}`:''}
+        </p>
+        ${x.url?`<p><a href="${x.url}" rel="noopener">More info</a></p>`:''}
+        ${x.notes?`<p>${esc(x.notes)}</p>`:''}
+        ${x.last?`<small>Last checked: ${esc(x.last)}</small>`:''}
+      </article>
+    `;
+  }
+
+  function get(col, r){ return r[idx[col]] || ''; }
+  function id(x){ return document.getElementById(x); }
+  function esc(s){ return (s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function parseCSV(text){
+    const out=[]; let row=[], cell='', q=false;
+    for (let i=0;i<text.length;i++){
+      const c=text[i], n=text[i+1];
+      if (q){ if (c=='"'&&n=='"'){cell+='"';i++;} else if (c=='"'){q=false;} else {cell+=c;} }
+      else { if (c=='"'){q=true;} else if (c==','){row.push(cell);cell='';}
+             else if (c=='\n'){row.push(cell);out.push(row);row=[];cell='';}
+             else if (c!='\r'){cell+=c;} }
+    }
+    if (cell.length||row.length){row.push(cell);out.push(row);}
+    return out;
+  }
+})();
+</script>
+
+<style>
+#baby-groups .cards { display:grid; gap:12px; }
+#baby-groups .card { background: var(--surface,#fff); border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,.06); padding:16px; }
+#baby-groups h3 { margin:0 0 6px; font-size:1.05rem; }
+#baby-groups p { margin:6px 0; }
+#baby-groups small { color:#666; }
+#filters select, #filters input { border:1px solid rgba(0,0,0,.1); border-radius:8px; padding:6px 8px; }
+</style>
